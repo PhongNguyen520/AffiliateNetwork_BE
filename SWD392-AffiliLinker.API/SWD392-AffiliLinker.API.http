@@ -1,0 +1,6 @@
+@SWD392_AffiliLinker.API_HostAddress = http://localhost:5145
+
+GET {{SWD392_AffiliLinker.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
