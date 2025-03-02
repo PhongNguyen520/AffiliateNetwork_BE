@@ -9,6 +9,8 @@ namespace SWD392_AffiliLinker.Repositories.Entities
 {
 	public class CampaignCategory : BaseEntity
 	{
-		public string Name { get; set; }
+		public string? Name { get; set; }
+		public string? Status { get; set; }
+		public virtual ICollection<Campaign> Campaigns { get; set;} = new List<Campaign>();
 	}
 }

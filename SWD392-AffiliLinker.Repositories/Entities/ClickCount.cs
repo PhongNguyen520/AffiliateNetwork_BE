@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace SWD392_AffiliLinker.Repositories.Entities
 {
-	public class Order : BaseEntity
-	{
-	}
+    public class ClickCount : BaseEntity
+    {
+        public double Count { get; set; }
+
+        public string AffiliateLinkId { get; set; }
+        public virtual AffiliateLink AffiliateLink { get; set;}
+    }
 }

@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using SWD392_AffiliLinker.Repositories;
+using SWD392_AffiliLinker.Repositories.Context;
+using SWD392_AffiliLinker.Services;
 
 namespace SWD392_AffiliLinker.API
 {
@@ -10,6 +14,13 @@ namespace SWD392_AffiliLinker.API
 			// Add services to the container.
 
 			builder.Services.AddConfig(builder.Configuration);
+			builder.Services.AddServiceConfig(builder.Configuration);
+			builder.Services.AddRepositoryConfig(builder.Configuration);
+			builder.Configuration
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables();
 			builder.Services.AddControllers();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
@@ -17,7 +28,12 @@ namespace SWD392_AffiliLinker.API
 
 			var app = builder.Build();
 
-			// Configure the HTTP request pipeline.
+			using (var scope = app.Services.CreateScope())
+			{
+				var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+				dbContext.Database.Migrate();
+			}
+
 			if (app.Environment.IsDevelopment())
 			{
 				app.UseSwagger();

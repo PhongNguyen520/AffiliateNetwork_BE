@@ -2,7 +2,7 @@
 
 namespace SWD392_AffiliLinker.Core.Store
 {
-	public enum StatusCode
+	public enum StatusCodes
 	{
 		[CustomName("Success")]
 		OK = 200,

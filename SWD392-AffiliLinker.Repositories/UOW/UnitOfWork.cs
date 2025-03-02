@@ -1,5 +1,6 @@
 ﻿using SWD392_AffiliLinker.Repositories.Context;
 using SWD392_AffiliLinker.Repositories.IUOW;
+using SWD392_AffiliLinker.Repositories.Repositories;
 
 namespace SWD392_AffiliLinker.Repositories.UOW
 {

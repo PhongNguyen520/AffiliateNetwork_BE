@@ -8,14 +8,14 @@ namespace SWD392_AffiliLinker.Core.Base
 	{
 		public T? Data { get; set; }
 		public string? Message { get; set; }
-		public StatusCode StatusCode { get; set; }
+		public StatusCodes StatusCode { get; set; }
 		public string? Code { get; set; }
 
 		public BaseResponse()
 		{
 
 		}
-		public BaseResponse(StatusCode statusCode, string code, T? data, string? message)
+		public BaseResponse(StatusCodes statusCode, string code, T? data, string? message)
 		{
 			Data = data;
 			Message = message;
@@ -23,34 +23,34 @@ namespace SWD392_AffiliLinker.Core.Base
 			Code = code;
 		}
 
-		public BaseResponse(StatusCode statusCode, string code, T? data)
+		public BaseResponse(StatusCodes statusCode, string code, T? data)
 		{
 			Data = data;
 			StatusCode = statusCode;
 			Code = code;
 		}
 
-		public BaseResponse(StatusCode statusCode, string code, string? message)
+		public BaseResponse(StatusCodes statusCode, string code, string? message)
 		{
 			Message = message;
 			StatusCode = statusCode;
 			Code = code;
 		}
 
-		public static BaseResponse<T> OkResponse(T? data)
+		public static BaseResponse<T> OkResponse(T? data, string? mess)
 		{
-			return new BaseResponse<T>(StatusCode.OK, StatusCode.OK.Name(), data);
+			return new BaseResponse<T>(StatusCodes.OK, StatusCodes.OK.Name(), data, mess);
 		}
 		public static BaseResponse<T> OkResponse(string? mess)
 		{
-			return new BaseResponse<T>(StatusCode.OK, StatusCode.OK.Name(), mess);
+			return new BaseResponse<T>(StatusCodes.OK, StatusCodes.OK.Name(), mess);
 		}
-		public static BaseResponse<T> FailResponse(string? message, StatusCode statusCode = StatusCode.BadRequest)
+		public static BaseResponse<T> FailResponse(string? message, StatusCodes statusCode = StatusCodes.BadRequest)
 		{
 			return new BaseResponse<T>(statusCode, statusCode.Name(), message);
 		}
 
-		public static BaseResponse<T> FailResponse(string? message, string code, StatusCode statusCode)
+		public static BaseResponse<T> FailResponse(string? message, string code, StatusCodes statusCode)
 		{
 			return new BaseResponse<T>(statusCode, code, message);
 		}
@@ -59,5 +59,5 @@ namespace SWD392_AffiliLinker.Core.Base
 		{
 			throw new NotImplementedException();
 		}
-	}	
+	}
 }
