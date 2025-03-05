@@ -11,6 +11,7 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
 	{
 		[Required(ErrorMessage = "Required")]
 		public string UserName { get; set; }
+
 		[Required(ErrorMessage = "Required")]
 		public string Password { get; set; }
 	}

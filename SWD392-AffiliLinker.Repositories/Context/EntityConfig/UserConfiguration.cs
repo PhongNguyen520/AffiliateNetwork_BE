@@ -45,8 +45,6 @@ namespace SWD392_AffiliLinker.Repositories.Context.EntityConfig
 				.IsRequired();
 
 			// Cấu hình trường Audit
-			builder.Property(u => u.CreatedBy)
-				.HasMaxLength(255);
 			builder.Property(u => u.LastUpdatedBy)
 				.HasMaxLength(255);
 			builder.Property(u => u.DeletedBy)

@@ -9,11 +9,11 @@ namespace SWD392_AffiliLinker.Repositories.Entities
 {
 	public class Advertiser : BaseEntity
 	{
-		public string CampanyName { get; set; } = string.Empty;
-		public string CompanyAddress { get; set; } = string.Empty;
-		public string Website { get; set; } = string.Empty;
+		public string CampanyName { get; set; }
+		public string CompanyAddress { get; set; }
+		public string Website { get; set; }
 		public DateTime Since { get; set; }
-		public string BussinessLicense {  get; set; } = string.Empty;
+		public string BussinessLicense {  get; set; }
 		public Guid UserId {  get; set; }
 		public virtual User User { get; set; }
 	}

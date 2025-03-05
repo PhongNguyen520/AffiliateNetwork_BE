@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SWD392_AffiliLinker.Repositories.Context;
 
@@ -11,9 +12,11 @@ using SWD392_AffiliLinker.Repositories.Context;
 namespace SWD392_AffiliLinker.Repositories.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250305172944_Remove Duplicate Email in User")]
+    partial class RemoveDuplicateEmailinUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,7 +269,7 @@ namespace SWD392_AffiliLinker.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AffiliateLinks", (string)null);
+                    b.ToTable("AffiliateLinks");
                 });
 
             modelBuilder.Entity("SWD392_AffiliLinker.Repositories.Entities.Bank", b =>

@@ -10,15 +10,12 @@ namespace SWD392_AffiliLinker.Repositories
 {
 	public static class DependencyInjection
 	{
-		public static void AddRepositoryConfig(this IServiceCollection services, IConfiguration configuration)
+		public static IServiceCollection AddRepositoryConfig(this IServiceCollection services)
 		{
-			services.AddRepositories();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+			return services;
 		}
 
-		public static void AddRepositories(this IServiceCollection services)
-		{
-			services.AddScoped<IUnitOfWork, UnitOfWork>();
-			services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-		}
 	}
 }

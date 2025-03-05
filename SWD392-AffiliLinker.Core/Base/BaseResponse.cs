@@ -9,13 +9,13 @@ namespace SWD392_AffiliLinker.Core.Base
 		public T? Data { get; set; }
 		public string? Message { get; set; }
 		public StatusCodes StatusCode { get; set; }
-		public string? Code { get; set; }
+		public int? Code { get; set; }
 
 		public BaseResponse()
 		{
 
 		}
-		public BaseResponse(StatusCodes statusCode, string code, T? data, string? message)
+		public BaseResponse(StatusCodes statusCode, int code, T? data, string? message)
 		{
 			Data = data;
 			Message = message;
@@ -23,14 +23,14 @@ namespace SWD392_AffiliLinker.Core.Base
 			Code = code;
 		}
 
-		public BaseResponse(StatusCodes statusCode, string code, T? data)
+		public BaseResponse(StatusCodes statusCode, int code, T? data)
 		{
 			Data = data;
 			StatusCode = statusCode;
 			Code = code;
 		}
 
-		public BaseResponse(StatusCodes statusCode, string code, string? message)
+		public BaseResponse(StatusCodes statusCode, int code, string? message)
 		{
 			Message = message;
 			StatusCode = statusCode;
@@ -39,18 +39,18 @@ namespace SWD392_AffiliLinker.Core.Base
 
 		public static BaseResponse<T> OkResponse(T? data, string? mess)
 		{
-			return new BaseResponse<T>(StatusCodes.OK, StatusCodes.OK.Name(), data, mess);
+			return new BaseResponse<T>(StatusCodes.OK, (int)StatusCodes.OK, data, mess);
 		}
 		public static BaseResponse<T> OkResponse(string? mess)
 		{
-			return new BaseResponse<T>(StatusCodes.OK, StatusCodes.OK.Name(), mess);
+			return new BaseResponse<T>(StatusCodes.OK, (int)StatusCodes.OK, mess);
 		}
 		public static BaseResponse<T> FailResponse(string? message, StatusCodes statusCode = StatusCodes.BadRequest)
 		{
-			return new BaseResponse<T>(statusCode, statusCode.Name(), message);
+			return new BaseResponse<T>(statusCode, (int)statusCode, message);
 		}
 
-		public static BaseResponse<T> FailResponse(string? message, string code, StatusCodes statusCode)
+		public static BaseResponse<T> FailResponse(string? message, int code, StatusCodes statusCode)
 		{
 			return new BaseResponse<T>(statusCode, code, message);
 		}

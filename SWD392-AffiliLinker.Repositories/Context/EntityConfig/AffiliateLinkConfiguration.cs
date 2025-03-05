@@ -25,26 +25,29 @@ namespace SWD392_AffiliLinker.Repositories.Context.EntityConfig
 
 			builder.Property(al => al.UtmSource)
 				.HasMaxLength(255)
-				.IsRequired();
+				.IsRequired(false);
 
 			builder.Property(al => al.UtmMedium)
 				.HasMaxLength(255)
-				.IsRequired();
+				.IsRequired(false);
 
 			builder.Property(al => al.UtmCampaign)
 				.HasMaxLength(255)
-				.IsRequired();
+				.IsRequired(false);
 
 			builder.Property(al => al.UtmContent)
-				.HasMaxLength(255); // Không bắt buộc
+				.HasMaxLength(255) // Không bắt buộc
+			    .IsRequired(false);
 
-			builder.Property(al => al.ShortenUrl)
-				.HasMaxLength(500);
+            builder.Property(al => al.ShortenUrl)
+				.HasMaxLength(500)
+                .IsRequired(false);
 
-			builder.Property(al => al.OptimizeUrl)
-				.HasMaxLength(500);
+            builder.Property(al => al.OptimizeUrl)
+				.HasMaxLength(500)
+                .IsRequired(false);
 
-			builder.Property(al => al.Status)
+            builder.Property(al => al.Status)
 				.HasMaxLength(100)
 				.IsRequired();
 

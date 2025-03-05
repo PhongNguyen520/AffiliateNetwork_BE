@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace SWD392_AffiliLinker.Services.Interfaces
 {
-	public interface IJwtTokenService
-	{
-		Task<string> GenerateJwtToken(User user);
-		Task<string> GenerateRefreshToken(User user);
-
+    public interface ICurrentUserService
+    {
+        int GetUserId();
+        string getUserEmail();
+        Task<User> GetCurrentAccountAsync();
     }
 }
