@@ -9,7 +9,7 @@ namespace SWD392_AffiliLinker.Repositories.Entities
 {
     public class Publisher : BaseEntity
     {
-        public string TaxCode { get; set; } = string.Empty;
+        public string? TaxCode { get; set; }
         public Guid UserId { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<Commission> Commissions { get; set; } = new List<Commission>();

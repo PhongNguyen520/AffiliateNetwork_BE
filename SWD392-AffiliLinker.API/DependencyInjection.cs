@@ -22,7 +22,8 @@ namespace SWD392_AffiliLinker.API
 			services.ConfigureIdentity();
 			services.AddAuthenticationBearer(configuration);
 			services.AddDatabase(configuration);
-		}
+        }
+
 		public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
 		{
 			services.AddDbContext<DatabaseContext>(options =>
@@ -30,6 +31,7 @@ namespace SWD392_AffiliLinker.API
 				options.UseSqlServer(configuration.GetConnectionString("MyDB"));
 			});
 		}
+
 		public static void ConfigureIdentity(this IServiceCollection services)
 		{
 			services.AddIdentity<User, IdentityRole<Guid>>(options =>
@@ -39,66 +41,79 @@ namespace SWD392_AffiliLinker.API
 				options.Password.RequireNonAlphanumeric = true;
 				options.Password.RequireUppercase = true;
 				options.Password.RequireLowercase = true;
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
 
-				//options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-				//options.Lockout.MaxFailedAccessAttempts = 5;
-				//options.Lockout.AllowedForNewUsers = true;
+                //Config Login
+                options.SignIn.RequireConfirmedPhoneNumber = false;
+                options.SignIn.RequireConfirmedEmail = false;
 
-				//options.User.RequireUniqueEmail = true;
-
-				//options.SignIn.RequireConfirmedEmail = false;
-				//options.SignIn.RequireConfirmedPhoneNumber = false;
-			})
+                #region cmt code Tam
+                //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                //options.Lockout.MaxFailedAccessAttempts = 5;
+                //options.Lockout.AllowedForNewUsers = true;
+                //options.User.RequireUniqueEmail = true;
+                //options.SignIn.RequireConfirmedEmail = false;
+                //options.SignIn.RequireConfirmedPhoneNumber = false;
+                #endregion
+            })
 			.AddEntityFrameworkStores<DatabaseContext>()
 			.AddDefaultTokenProviders();
 		}
 
 		public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
 		{
-			services.AddAuthentication(options =>
-			{
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			})
-			.AddJwtBearer(options =>
-			{
-				options.TokenValidationParameters = new TokenValidationParameters
-				{
-					ValidateIssuer = true,
-					ValidateAudience = true,
-					ValidateLifetime = true,
-					ClockSkew = TimeSpan.Zero, 
-					ValidIssuer = configuration["JWT:ValidIssuer"],
-					ValidAudience = configuration["JWT:ValidAudience"],
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-				};
+            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
 
-				options.Events = new JwtBearerEvents
-				{
-					OnMessageReceived = context =>
-					{
-						var path = context.HttpContext.Request.Path;
-						if (path.StartsWithSegments("/chatHub") &&
-							context.Request.Query.TryGetValue("access_token", out var accessToken))
-						{
-							context.Token = accessToken.ToString().Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
-						}
-						return Task.CompletedTask;
-					},
-					OnAuthenticationFailed = context =>
-					{
-						context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-						return Task.CompletedTask;
-					}
-				};
-			});
-		}
+                    ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
 
-		public static void AddSwaggerUIAuthentication(this IServiceCollection services)
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var path = context.HttpContext.Request.Path;
+                        if (path.StartsWithSegments("/chatHub") &&
+                            context.Request.Query.TryGetValue("access_token", out var accessToken))
+                        {
+                            context.Token = accessToken.ToString().Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+        }
+
+        public static void AddSwaggerUIAuthentication(this IServiceCollection services)
 		{
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = "OnDemandTutorV2.API", Version = "v1" });
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "SWD392-AffiliLinker.API", Version = "v1" });
 
 				c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 				{
@@ -106,6 +121,7 @@ namespace SWD392_AffiliLinker.API
 					Name = "Authorization",
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
 					Scheme = "Bearer"
 				});
 
@@ -114,13 +130,19 @@ namespace SWD392_AffiliLinker.API
 				{
 					new OpenApiSecurityScheme
 					{
-						Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+						Reference = new OpenApiReference 
+                        { 
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
 					},
-					Array.Empty<string>()
-				}
+                    new string[]{}
+                }
 			});
 			});
 		}
 	}
 
 }
+
+

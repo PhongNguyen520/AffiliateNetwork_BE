@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Repositories.Context;
-using SWD392_AffiliLinker.Repositories.IUOW;
+using SWD392_AffiliLinker.Repositories.Interfaces;
 using System.Linq.Expressions;
 
 namespace SWD392_AffiliLinker.Repositories.Repositories

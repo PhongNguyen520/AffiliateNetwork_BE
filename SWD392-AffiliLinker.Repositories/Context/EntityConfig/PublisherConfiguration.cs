@@ -21,7 +21,7 @@ namespace SWD392_AffiliLinker.Repositories.Context.EntityConfig
 			// Cấu hình thuộc tính TaxCode
 			builder.Property(p => p.TaxCode)
 				.HasMaxLength(50)
-				.IsRequired();
+				.IsRequired(false);
 
 			// Cấu hình quan hệ 1-1 với User
 			builder.HasOne(p => p.User)

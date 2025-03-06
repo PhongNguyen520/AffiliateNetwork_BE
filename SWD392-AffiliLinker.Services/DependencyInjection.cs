@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using SWD392_AffiliLinker.Repositories.IUOW;
 using SWD392_AffiliLinker.Repositories.UOW;
 using SWD392_AffiliLinker.Services.Interfaces;
 using SWD392_AffiliLinker.Services.Mapping;
 using SWD392_AffiliLinker.Services.Services;
+using System.Text;
 
 namespace SWD392_AffiliLinker.Services
 {
@@ -23,11 +26,13 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
 			services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 			services.AddScoped<IJwtTokenService, JwtTokenService>();
-		}
 
-		public static void AddAutoMapperConfig(this IServiceCollection services)
+        }
+
+        public static void AddAutoMapperConfig(this IServiceCollection services)
 		{
 			services.AddAutoMapper(typeof(MappingProfile));
 		}
-	}
+
+    }
 }

@@ -31,7 +31,22 @@ namespace SWD392_AffiliLinker.Repositories.Context
 		{
 			base.OnModelCreating(modelBuilder);
 
-			modelBuilder.ApplyConfiguration(new AdvertiserConfiguration());
+
+            //Remove the AspNet prefix
+            #region Remove name
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var tableName = entityType.GetTableName();
+                if (tableName.StartsWith("AspNet"))
+                {
+                    entityType.SetTableName(tableName.Substring(6));
+                }
+            }
+            #endregion
+
+
+
+            modelBuilder.ApplyConfiguration(new AdvertiserConfiguration());
 			modelBuilder.ApplyConfiguration(new AdvertiserConfiguration());
 			modelBuilder.ApplyConfiguration(new BankConfiguration());
 			modelBuilder.ApplyConfiguration(new CampaignConfiguration());

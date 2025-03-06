@@ -45,6 +45,6 @@ namespace SWD392_AffiliLinker.Repositories.Context.EntityConfig
 				.WithMany()
 				.HasForeignKey(a => a.UserId)
 				.OnDelete(DeleteBehavior.Cascade); // Khi xóa User thì Advertiser cũng bị xóa
-		}
+        }
 	}
 }
