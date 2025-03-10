@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +28,10 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
 			services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 			services.AddScoped<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         }
 

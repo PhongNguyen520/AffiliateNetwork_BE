@@ -26,12 +26,12 @@ namespace SWD392_AffiliLinker.Services.Services
 
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimTypes.UserData, user.Id.ToString()),
+				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
-			IEnumerable<string> roles = _userManager.GetRolesAsync(user: user).Result;
+			IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
 			foreach (string role in roles)
 			{
 				claims.Add(new Claim(ClaimTypes.Role, role));

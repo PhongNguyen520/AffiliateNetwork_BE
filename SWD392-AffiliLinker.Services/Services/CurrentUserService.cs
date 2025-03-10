@@ -31,13 +31,14 @@ namespace SWD392_AffiliLinker.Services.Services
             _unitOfWork.BeginTransaction();
             try
             {
-                int userId = GetUserId();
+                string userId = GetUserId();
                 var account = await _unitOfWork.GetRepository<User>().GetByIdAsync(userId);
                 _unitOfWork.CommitTransaction();
                 return account;
             }
             catch (Exception ex)
             {
+                _unitOfWork.RollBack();
                 throw new BaseException.ErrorException(Core.Store.StatusCodes.BadRequest, Core.Store.StatusCodes.BadRequest.Name(), "Login Before USE!!!!");
             }
             
@@ -55,11 +56,11 @@ namespace SWD392_AffiliLinker.Services.Services
             }
         }
 
-        public int GetUserId()
+        public string GetUserId()
         {
             try
             {
-                return int.Parse(_httpContextAccessor.HttpContext.User.FindFirst("user_ID")?.Value);
+                return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
             catch
             {

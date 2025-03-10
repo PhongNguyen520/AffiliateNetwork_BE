@@ -31,6 +31,8 @@ namespace SWD392_AffiliLinker.API
                                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                             });
 
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -49,8 +51,9 @@ namespace SWD392_AffiliLinker.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
