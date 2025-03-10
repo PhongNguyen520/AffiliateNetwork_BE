@@ -16,11 +16,13 @@ namespace SWD392_AffiliLinker.API.Controllers
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly ILogger<AuthController> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
-        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger)
+        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger, ICurrentUserService currentUserService)
         {
             _authenticationService = authenticationService;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
 
@@ -186,6 +188,31 @@ namespace SWD392_AffiliLinker.API.Controllers
                     Message = "Có lỗi xảy ra, vui lòng thử lại sau.",
                     Code = (int)Core.Store.StatusCodes.ServerError
                 });
+            }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("check-current")]
+        public async Task<ActionResult<BaseResponse<string>>> CheckUserCurrent()
+        {
+            try
+            {
+                var idUser = _currentUserService.GetUserId();
+                return Ok(BaseResponse<string>.OkResponse(idUser, "Successfull"));
+            }
+            catch(BaseException.ErrorException ex)
+            {
+                return StatusCode((int)ex.StatusCode, new BaseResponse<string>
+                {
+                    StatusCode = ex.StatusCode,
+                    Message = ex.ErrorDetail.ErrorMessage.ToString(),
+                    Code = (int)ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

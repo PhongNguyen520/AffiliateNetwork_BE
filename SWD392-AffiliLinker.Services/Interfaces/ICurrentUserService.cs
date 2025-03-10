@@ -9,7 +9,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 {
     public interface ICurrentUserService
     {
-        int GetUserId();
+        string GetUserId();
         string getUserEmail();
         Task<User> GetCurrentAccountAsync();
     }
