@@ -1,4 +1,5 @@
 ﻿using SWD392_AffiliLinker.Core.Base;
+using System.Linq.Expressions;
 
 namespace SWD392_AffiliLinker.Repositories.Interfaces
 {
@@ -28,7 +29,11 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
         Task<T?> FindAsync(params object[] keyValues);
 
         Task<int> CountAsync();
+<<<<<<< HEAD
+        Task<IList<T>> SearchAsync(Expression<Func<T, bool>> filter);
+=======
 		IQueryable<T> GetAllQueryable();
+>>>>>>> b504450649657c4ec62e024655cbe2b74be6c8ba
 
 	}
 }
