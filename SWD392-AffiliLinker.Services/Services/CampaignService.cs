@@ -1,135 +1,82 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_AffiliLinker.Repositories.Entities;
 using SWD392_AffiliLinker.Repositories.IUOW;
-using SWD392_AffiliLinker.Services.DTO;
 using SWD392_AffiliLinker.Core.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SWD392_AffiliLinker.Services.Interfaces;
-using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
-using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
+using AutoMapper;
+using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 
 namespace SWD392_AffiliLinker.Services
 {
-	public class CampaignService : ICampaignService
+    public class CampaignService : ICampaignService
 	{
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICurrentUserService _currentUserService;
+		private readonly IMapper _mapper;
 
-		public CampaignService(IUnitOfWork unitOfWork)
+		public CampaignService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
+			_currentUserService = currentUserService;
+			_mapper = mapper;
 		}
 
-		public async Task<BaseResponse<CampaignResponse>> CreateCampaignAsync(CampaignRequest campaignRequest)
+		public async Task<BaseResponse<CampaignResponse>> CreateCampaignAsync(CreateCampaignRequest campaignRequest)
 		{
+			_unitOfWork.BeginTransaction();
 			try
 			{
-
-				var campaign = new Campaign
-				{
-					Id = Guid.NewGuid().ToString(),
-					CampaignName = campaignRequest.CampaignName,
-					Description = campaignRequest.Description,
-					Introduction = campaignRequest.Introduction,
-					Policy = campaignRequest.Policy,
-					Image = campaignRequest.Image,
-					WebsiteLink = campaignRequest.WebsiteLink,
-					TargetCustomer = campaignRequest.TargetCustomer,
-					Zone = campaignRequest.Zone,
-					CategoryId = campaignRequest.CategoryId,
-					StartDate = campaignRequest.StartDate,
-					EndDate = campaignRequest.EndDate,
-					Status = "0",
-					UserId = campaignRequest.UserId,
-					EnrollCount = 0, // Initialize with default values
-					ConversionRate = 0 // Initialize with default values
-				};
-
+				var userId = _currentUserService.GetUserId();
+				var campaign = _mapper.Map<Campaign>(campaignRequest);
+				campaign.UserId = Guid.Parse(userId);
+				campaign.EnrollCount = 0;
+				campaign.CreatedTime = DateTime.Now;
+				campaign.LastUpdatedTime = DateTime.Now;
+				campaign.Status = CampaignStatus.Wait.ToString();
 				if (string.IsNullOrEmpty(campaignRequest.CategoryId))
 				{
 					campaign.CategoryId = null;
 				}
-
 				await _unitOfWork.GetRepository<Campaign>().InsertAsync(campaign);
-
-				await _unitOfWork.SaveAsync();
-
-				var response = new CampaignResponse
+				var payoutModels = campaignRequest.PayoutModelsId.Select(payoutId => new CampaignPayoutModel
 				{
-					Id = campaign.Id,
-					CampaignName = campaign.CampaignName,
-					Description = campaign.Description,
-					Introduction = campaign.Introduction,
-					Policy = campaign.Policy,
-					Image = campaign.Image,
-					WebsiteLink = campaign.WebsiteLink,
-					EnrollCount = campaign.EnrollCount,
-					ConversionRate = campaign.ConversionRate,
-					TargetCustomer = campaign.TargetCustomer,
-					Zone = campaign.Zone,
-					CategoryId = campaign.CategoryId,
-					StartDate = campaign.StartDate,
-					EndDate = campaign.EndDate,
-					Status = campaign.Status,
-					UserId = campaign.UserId
-				};
+					PayoutModelId = payoutId,
+					CampaignId = campaign.Id,
+					CreatedTime = DateTime.UtcNow,
+					LastUpdatedTime = DateTime.UtcNow,
+					Status = MemberStatus.Active.ToString()
+				}).ToList();
+
+				_unitOfWork.GetRepository<CampaignPayoutModel>().InsertRange(payoutModels);
+				await _unitOfWork.SaveAsync();
+				_unitOfWork.CommitTransaction();
+
+				var response = _mapper.Map<CampaignResponse>(campaign);
 
 				return BaseResponse<CampaignResponse>.OkResponse(response, "Campaign created successfully");
 			}
 			catch (Exception ex)
 			{
+				_unitOfWork.RollBack();
 				return BaseResponse<CampaignResponse>.FailResponse($"Error: {ex.Message} | Inner: {ex.InnerException?.Message}");
 			}
 		}
-
-
-		public async Task<BaseResponse<IEnumerable<CampaignResponse>>> GetAllCampaignsAsync()
-		{
-			try
-			{
-				var campaigns = await _unitOfWork.GetRepository<Campaign>().GetAllAsync();
-				var campaignResponses = campaigns.Select(c => new CampaignResponse
-				{
-					Id = c.Id,
-					CampaignName = c.CampaignName,
-					Description = c.Description,
-					Introduction = c.Introduction,
-					Policy = c.Policy,
-					Image = c.Image,
-					WebsiteLink = c.WebsiteLink,
-					EnrollCount = c.EnrollCount,
-					ConversionRate = c.ConversionRate,
-					TargetCustomer = c.TargetCustomer,
-					Zone = c.Zone,
-					CategoryId = c.CategoryId,
-					StartDate = c.StartDate,
-					EndDate = c.EndDate,
-					Status = c.Status,
-					UserId = c.UserId
-
-				});
-
-				return BaseResponse<IEnumerable<CampaignResponse>>.OkResponse(campaignResponses, "Campaigns retrieved successfully");
-			}
-			catch (Exception ex)
-			{
-				return BaseResponse<IEnumerable<CampaignResponse>>.FailResponse(ex.Message);
-			}
-		}
-
 
 		public async Task<BaseResponse<IEnumerable<CampaignListResponse>>> GetAllCampaignIdsAndNamesAsync()
 		{
 			try
 			{
-				var campaigns = await _unitOfWork.GetRepository<Campaign>().GetAllAsync();
+				var userId = _currentUserService.GetUserId();
+				var campaigns = _unitOfWork.GetRepository<CampaignMember>().Entities.Where(s => s.UserId == Guid.Parse(userId));
 
 				var campaignList = campaigns.Select(c => new CampaignListResponse
 				{
-					Id = c.Id,
-					CampaignName = c.CampaignName
+					Id = c.CampaignId,
+					CampaignName = c.Campaign.CampaignName,
+					Url = c.Campaign.Image,
+					Status = c.Campaign.Status,
 				});
 
 				return BaseResponse<IEnumerable<CampaignListResponse>>.OkResponse(campaignList, "Campaign IDs and names retrieved successfully");
@@ -141,39 +88,25 @@ namespace SWD392_AffiliLinker.Services
 		}
 
 
-		public async Task<BaseResponse<CampaignResponse>> GetCampaignByIdAsync(string id)
+		public async Task<BaseResponse<CampaignDetailResponse>> GetCampaignByIdAsync(string id)
 		{
 			try
 			{
-				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
+				var campaign = await _unitOfWork.GetRepository<Campaign>().Entities
+						.Include(c => c.Category)
+						.Include(c => c.CampaignPayoutModels)
+						.ThenInclude(cpm => cpm.PayoutModel)
+						.FirstOrDefaultAsync(s => s.Id == id);
+
 				if (campaign == null)
-					return BaseResponse<CampaignResponse>.FailResponse("Campaign not found");
+					return BaseResponse<CampaignDetailResponse>.FailResponse("Campaign not found");
 
-				var response = new CampaignResponse
-				{
-					Id = campaign.Id,
-					CampaignName = campaign.CampaignName,
-					Description = campaign.Description,
-					Introduction = campaign.Introduction,
-					Policy = campaign.Policy,
-					Image = campaign.Image,
-					WebsiteLink = campaign.WebsiteLink,
-					EnrollCount = campaign.EnrollCount,
-					ConversionRate = campaign.ConversionRate,
-					TargetCustomer = campaign.TargetCustomer,
-					Zone = campaign.Zone,
-					CategoryId = campaign.CategoryId,
-					StartDate = campaign.StartDate,
-					EndDate = campaign.EndDate,
-					Status = campaign.Status,
-					UserId = campaign.UserId
-				};
-
-				return BaseResponse<CampaignResponse>.OkResponse(response, "Campaign retrieved successfully");
+				var response = _mapper.Map<CampaignDetailResponse>(campaign);
+				return BaseResponse<CampaignDetailResponse>.OkResponse(response, "Campaign retrieved successfully");
 			}
 			catch (Exception ex)
 			{
-				return BaseResponse<CampaignResponse>.FailResponse(ex.Message);
+				return BaseResponse<CampaignDetailResponse>.FailResponse(ex.Message);
 			}
 		}
 
@@ -181,23 +114,13 @@ namespace SWD392_AffiliLinker.Services
 		{
 			try
 			{
+				var userId = _currentUserService.GetUserId();
 				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
 				if (campaign == null)
 					return BaseResponse<bool>.FailResponse("Campaign not found");
 
-				campaign.CampaignName = updatedCampaign.CampaignName;
-				campaign.Description = updatedCampaign.Description;
-				campaign.Introduction = updatedCampaign.Introduction;
-				campaign.Policy = updatedCampaign.Policy;
-				campaign.Image = updatedCampaign.Image;
-				campaign.WebsiteLink = updatedCampaign.WebsiteLink;
-				campaign.TargetCustomer = updatedCampaign.TargetCustomer;
-				campaign.Zone = updatedCampaign.Zone;
-				campaign.CategoryId = updatedCampaign.CategoryId;
-				campaign.StartDate = updatedCampaign.StartDate;
-				campaign.EndDate = updatedCampaign.EndDate;
-				campaign.Status = updatedCampaign.Status;
-				campaign.UserId = updatedCampaign.UserId;
+				campaign = _mapper.Map<Campaign>(updatedCampaign);
+				campaign.UserId = Guid.Parse(userId);
 
 				_unitOfWork.GetRepository<Campaign>().Update(campaign);
 				await _unitOfWork.SaveAsync();
@@ -229,11 +152,22 @@ namespace SWD392_AffiliLinker.Services
 			}
 		}
 
-		public async Task<BaseResponse<IEnumerable<CampaignResponse>>> FilterCampaignsAsync(string? name, string? status, DateTime? startDate, DateTime? endDate)
+		public async Task<BasePaginatedList<CampaignFilterResponse>> FilterCampaignsAsync(string? name, string? status, DateTime? startDate, DateTime? endDate, string? payoutMethod, string? category, int? index, int? size)
 		{
 			try
 			{
-				var query = _unitOfWork.GetRepository<Campaign>().GetAllQueryable();
+				IQueryable<Campaign> query = _unitOfWork.GetRepository<Campaign>().Entities;
+
+				if (!string.IsNullOrEmpty(payoutMethod))
+				{
+					List<string> campaignIdsWithPayout = await _unitOfWork.GetRepository<CampaignPayoutModel>()
+						.Entities
+						.Where(cp => cp.PayoutModelId == payoutMethod)
+						.Select(cp => cp.CampaignId)
+						.ToListAsync();
+
+					query = query.Where(c => campaignIdsWithPayout.Contains(c.Id));
+				}
 
 				if (!string.IsNullOrEmpty(name))
 				{
@@ -255,60 +189,56 @@ namespace SWD392_AffiliLinker.Services
 					query = query.Where(c => c.EndDate <= endDate.Value);
 				}
 
-				var campaigns = await query.ToListAsync();
-				var campaignResponses = campaigns.Select(c => new CampaignResponse
+				if (!string.IsNullOrEmpty(category))
 				{
-					Id = c.Id,
-					CampaignName = c.CampaignName,
-					Description = c.Description,
-					Introduction = c.Introduction,
-					Policy = c.Policy,
-					Image = c.Image,
-					WebsiteLink = c.WebsiteLink,
-					EnrollCount = c.EnrollCount,
-					ConversionRate = c.ConversionRate,
-					TargetCustomer = c.TargetCustomer,
-					Zone = c.Zone,
-					CategoryId = c.CategoryId,
-					StartDate = c.StartDate,
-					EndDate = c.EndDate,
-					Status = c.Status,
-					UserId = c.UserId
-				});
+					query = query.Where(c => c.CategoryId == category);
+				}
 
-				return BaseResponse<IEnumerable<CampaignResponse>>.OkResponse(campaignResponses, "Campaigns filtered successfully");
+				BasePaginatedList<Campaign> result = await _unitOfWork.GetRepository<Campaign>().GetPagging(query, index, size);
+				List<CampaignFilterResponse> campaigns = _mapper.Map<List<CampaignFilterResponse>>(result.Items);
+				return new BasePaginatedList<CampaignFilterResponse>(campaigns, result.TotalItems, result.CurrentPage, result.PageSize);
 			}
 			catch (Exception ex)
 			{
-				return BaseResponse<IEnumerable<CampaignResponse>>.FailResponse(ex.Message);
+				throw;
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, string status)
+		public async Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, CampaignStatus status)
 		{
+			_unitOfWork.BeginTransaction();
 			try
 			{
-				// Validate status value
-				if (status != "1" && status != "-1")
-				{
-					return BaseResponse<bool>.FailResponse("Status must be either '1' (approved) or '-1' (rejected)");
-				}
-
 				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
 				if (campaign == null)
 					return BaseResponse<bool>.FailResponse("Campaign not found");
 
-				// Update only the status
-				campaign.Status = status;
+				campaign.Status = status.ToString();
 
 				_unitOfWork.GetRepository<Campaign>().Update(campaign);
 				await _unitOfWork.SaveAsync();
-
-				return BaseResponse<bool>.OkResponse(true, $"Campaign status updated to {(status == "1" ? "approved" : "rejected")}");
+				_unitOfWork.CommitTransaction();
+				return BaseResponse<bool>.OkResponse(true, $"Campaign status updated to {campaign.Status}");
 			}
 			catch (Exception ex)
 			{
 				return BaseResponse<bool>.FailResponse(ex.Message);
+			}
+		}
+
+		public async Task<BasePaginatedList<CampaignResponse>> GetWaitCampaignList(int? index, int? size)
+		{
+			try
+			{
+				IQueryable<Campaign> query = _unitOfWork.GetRepository<Campaign>().Entities.Where(c => c.Status == CampaignStatus.Wait.ToString());
+
+				BasePaginatedList<Campaign> result = await _unitOfWork.GetRepository<Campaign>().GetPagging(query, index, size);
+				List<CampaignResponse> campaigns = _mapper.Map<List<CampaignResponse>>(result.Items);
+				return new BasePaginatedList<CampaignResponse>(campaigns, result.TotalItems, result.CurrentPage, result.PageSize);
+			}
+			catch (Exception ex)
+			{
+				throw;
 			}
 		}
 	}

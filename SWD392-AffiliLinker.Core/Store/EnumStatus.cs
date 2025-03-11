@@ -21,5 +21,21 @@ namespace SWD392_AffiliLinker.Core.Store
 			Active,
 			Stop
 		}
+
+        public enum MemberStatus
+        {
+			Active,
+			Stop
+		}
+
+		public enum CampaignStatus
+		{
+			Wait,
+			Active,
+			Reject,
+			UnPaid,
+			Stop,
+			End
+		}
 	}
 }

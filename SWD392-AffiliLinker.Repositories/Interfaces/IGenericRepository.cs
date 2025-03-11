@@ -19,7 +19,7 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
 
         // async
         Task<IList<T>> GetAllAsync();
-        Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize);
+        Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int? index, int? pageSize);
         Task<T?> GetByIdAsync(object id);
         Task InsertAsync(T obj);
         Task UpdateAsync(T obj);
@@ -29,11 +29,7 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
         Task<T?> FindAsync(params object[] keyValues);
 
         Task<int> CountAsync();
-<<<<<<< HEAD
         Task<IList<T>> SearchAsync(Expression<Func<T, bool>> filter);
-=======
-		IQueryable<T> GetAllQueryable();
->>>>>>> b504450649657c4ec62e024655cbe2b74be6c8ba
 
 	}
 }

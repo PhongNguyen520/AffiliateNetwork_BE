@@ -12,7 +12,6 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 	public interface IAffiliateLinkService
 	{
 		Task<CreateLinkResponse> CreateLink(CreateLinkRequest request);
-		//Task<string> GetByShortCodeAsync(string shortCode);
-		Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int pageIndex);
+		Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int? pageIndex, int? pageSize);
 	}
 }

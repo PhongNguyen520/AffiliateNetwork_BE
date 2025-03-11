@@ -21,17 +21,42 @@ namespace SWD392_AffiliLinker.API.Controllers
 			_logger = logger;
 		}
 
+		/// <summary>
+		/// Danh sách links của Publisher khi vào trang manage links.
+		/// </summary>
 		[HttpGet]
 		[Authorize(Roles = "Publisher")]
-		public async Task<ActionResult<BaseResponse<string>>> GetLinks(int pageIndex)
+		public async Task<ActionResult<BaseResponse<BasePaginatedList<GetLinksResponse>>>> GetLinks(int pageIndex, int pageSize)
 		{
-			var result = await _affiliateLinkService.GetPublisherLinkList(pageIndex);
-			return Ok(BaseResponse<BasePaginatedList<GetLinksResponse>>.OkResponse(result, "Successful"));
+			try
+			{
+				var result = await _affiliateLinkService.GetPublisherLinkList(pageIndex, pageSize);
+				return Ok(BaseResponse<BasePaginatedList<GetLinksResponse>>.OkResponse(result, "Successful"));
+			}
+			catch (BaseException.ErrorException ex)
+			{
+				return StatusCode((int)ex.StatusCode, new BaseResponse<string>
+				{
+					StatusCode = ex.StatusCode,
+					Message = ex.ErrorDetail.ErrorMessage.ToString(),
+					Code = (int)ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error when get affiliate link.");
+				return StatusCode(500, new BaseResponse<string>
+				{
+					StatusCode = Core.Store.StatusCodes.ServerError,
+					Message = "Có lỗi xảy ra, vui lòng thử lại sau.",
+					Code = (int)Core.Store.StatusCodes.ServerError
+				});
+			}
 		}
 
 		[HttpPost("createlink")]
 		[Authorize(Roles = "Publisher")]
-		public async Task<ActionResult<BaseResponse<string>>> CreateLink(CreateLinkRequest request)
+		public async Task<ActionResult<BaseResponse<CreateLinkResponse>>> CreateLink(CreateLinkRequest request)
 		{
 			try
 			{

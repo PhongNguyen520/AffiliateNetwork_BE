@@ -34,19 +34,26 @@ namespace SWD392_AffiliLinker.Services.Services
 			_unitOfWork.BeginTransaction();
 			try
 			{
-				var userId = _currentUserService.GetUserId();
+				string userId = _currentUserService.GetUserId();
 				if (string.IsNullOrEmpty(userId))
 				{
 					_unitOfWork.RollBack();
-					throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), "Exprier Time");
+					throw new BaseException.ErrorException(StatusCodes.Unauthorized, StatusCodes.Unauthorized.Name(), "Login to continue");
 				}
-				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(request.CampaignId);
+				Campaign? campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(request.CampaignId);
+				if (campaign == null)
+				{
+					_unitOfWork.RollBack();
+					throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), "Campaign doesn't exist!");
+				}
 				request.Status = LinkStatus.Active;
 				if (string.IsNullOrEmpty(request.Url))
 				{
 					request.Url = campaign.WebsiteLink;
 				}
 				var result = _mapper.Map<AffiliateLink>(request);
+				result.CreatedTime = DateTime.UtcNow;
+				result.LastUpdatedTime = DateTime.UtcNow;
 				result.UserId = Guid.Parse(userId);
 				result.ShortenUrl = await GenerateShortCodeAsync();
 
@@ -73,7 +80,7 @@ namespace SWD392_AffiliLinker.Services.Services
 			}
 		}
 
-		public async Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int pageIndex)
+		public async Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int? pageIndex, int? pageSize)
 		{
 			try
 			{
@@ -81,11 +88,11 @@ namespace SWD392_AffiliLinker.Services.Services
 				if (string.IsNullOrEmpty(userId))
 				{
 					_unitOfWork.RollBack();
-					throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), "Exprier Time");
+					throw new BaseException.ErrorException(StatusCodes.Unauthorized, StatusCodes.Unauthorized.Name(), "Login to continue");
 				}
 				var repository = _unitOfWork.GetRepository<AffiliateLink>();
 				IQueryable<AffiliateLink>? query = repository.Entities.Where(s => s.UserId == Guid.Parse(userId));
-				BasePaginatedList<AffiliateLink>? pagingList = await repository.GetPagging(query, pageIndex, 5);
+				BasePaginatedList<AffiliateLink>? pagingList = await repository.GetPagging(query, pageIndex, pageSize);
 				List<GetLinksResponse> result = _mapper.Map<List<GetLinksResponse>>(pagingList.Items);
 				foreach (var link in result)
 				{

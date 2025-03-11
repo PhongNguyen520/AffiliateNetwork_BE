@@ -31,8 +31,9 @@ namespace SWD392_AffiliLinker.Services
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 			services.AddScoped<IAffiliateLinkService, AffiliateLinkService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-        }
+			services.AddScoped<ICampaignService, CampaignService>();
+			services.AddScoped<ICampaignMemberService, CampaignMemberService>();
+		}
 
         public static void AddAutoMapperConfig(this IServiceCollection services)
 		{

@@ -162,7 +162,7 @@ namespace SWD392_AffiliLinker.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<BaseResponse<string>>> Login(LoginRequest model)
+        public async Task<ActionResult<BaseResponse<AuthenResponse>>> Login(LoginRequest model)
         {
             try
             {

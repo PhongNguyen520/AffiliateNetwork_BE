@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SWD392_AffiliLinker.Repositories.Context;
@@ -10,6 +11,7 @@ using SWD392_AffiliLinker.Repositories.Entities;
 using SWD392_AffiliLinker.Services.Interfaces;
 using SWD392_AffiliLinker.Services.Mapping;
 using SWD392_AffiliLinker.Services.Services;
+using System.Reflection;
 using System.Text;
 
 namespace SWD392_AffiliLinker.API
@@ -113,6 +115,9 @@ namespace SWD392_AffiliLinker.API
 		{
 			services.AddSwaggerGen(c =>
 			{
+				var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "SWD392-AffiliLinker.API", Version = "v1" });
 
 				c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

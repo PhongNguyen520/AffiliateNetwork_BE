@@ -56,12 +56,18 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize)
+        public async Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int? index, int? pageSize)
         {
             query = query.AsNoTracking();
-            int count = await query.CountAsync();
-            IReadOnlyCollection<T> items = await query.Skip((index - 1) * pageSize).Take(pageSize).ToListAsync();
-            return new BasePaginatedList<T>(items, count, index, pageSize);
+			int count = await query.CountAsync();
+			int pageIndex = (index > 0 ? index : 1) ?? 1;
+            int pageSizeValue = (pageSize > 0 ? pageSize : 6) ?? 6;
+
+			IReadOnlyCollection<T> items = await query
+				.Skip((pageIndex - 1) * pageSizeValue)
+				.Take(pageSizeValue)
+				.ToListAsync();
+			return new BasePaginatedList<T>(items, count, index, pageSize);
         }
 
         public void Insert(T obj)
