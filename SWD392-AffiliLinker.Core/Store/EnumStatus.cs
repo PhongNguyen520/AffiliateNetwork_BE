@@ -15,5 +15,11 @@ namespace SWD392_AffiliLinker.Core.Store
             Banned,
             Deleted
         }
-    }
+
+		public enum LinkStatus
+		{
+			Active,
+			Stop
+		}
+	}
 }

@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using SWD392_AffiliLinker.Repositories.IUOW;
-using SWD392_AffiliLinker.Repositories.UOW;
+using SWD392_AffiliLinker.Services.Config.LinkConfig;
 using SWD392_AffiliLinker.Services.Interfaces;
 using SWD392_AffiliLinker.Services.Mapping;
 using SWD392_AffiliLinker.Services.Services;
@@ -20,6 +18,7 @@ namespace SWD392_AffiliLinker.Services
 		{
 			services.AddServices();
 			services.AddAutoMapperConfig();
+			services.AddOtherServiceConfig(configuration);
 		}
 
 
@@ -30,8 +29,8 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
+			services.AddScoped<IAffiliateLinkService, AffiliateLinkService>();
+			services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         }
 
@@ -40,5 +39,9 @@ namespace SWD392_AffiliLinker.Services
 			services.AddAutoMapper(typeof(MappingProfile));
 		}
 
-    }
+		public static void AddOtherServiceConfig(this IServiceCollection services, IConfiguration configuration)
+		{
+			services.Configure<AffiliateDomainOptions>(configuration.GetSection("AffiliateDomain"));
+		}
+	}
 }
