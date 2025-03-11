@@ -1,23 +1,24 @@
 ﻿using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Repositories.Entities;
-using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
-using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 
 namespace SWD392_AffiliLinker.Services.Interfaces
 {
-	public interface ICampaignService
+    public interface ICampaignService
 	{
-		Task<BaseResponse<IEnumerable<CampaignResponse>>> GetAllCampaignsAsync();
-		Task<BaseResponse<CampaignResponse>> GetCampaignByIdAsync(string id);
-		Task<BaseResponse<CampaignResponse>> CreateCampaignAsync(CampaignRequest request);
+		Task<BaseResponse<CampaignDetailResponse>> GetCampaignByIdAsync(string id);
+		Task<BaseResponse<CampaignResponse>> CreateCampaignAsync(CreateCampaignRequest request);
 		Task<BaseResponse<bool>> UpdateCampaignAsync(string id, CampaignRequest request);
 		Task<BaseResponse<bool>> DeleteCampaignAsync(string id);
-		Task<BaseResponse<IEnumerable<CampaignResponse>>> FilterCampaignsAsync(string? name, string? status, DateTime? startDate, DateTime? endDate);
+		Task<BasePaginatedList<CampaignFilterResponse>> FilterCampaignsAsync(string? name, string? status, DateTime? startDate, DateTime? endDate, string? payoutMethod, string? category, int? index, int? size);
 		Task<BaseResponse<IEnumerable<CampaignListResponse>>> GetAllCampaignIdsAndNamesAsync();
-		Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, string status);
+		Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, CampaignStatus status);
+		Task<BasePaginatedList<CampaignResponse>> GetWaitCampaignList(int? index, int? size);
 	}
 
 }

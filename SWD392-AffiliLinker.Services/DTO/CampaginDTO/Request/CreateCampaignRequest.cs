@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
+namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request
 {
-	public class CampaignRequest
+	public class CreateCampaignRequest
 	{
 		public string CampaignName { get; set; }
 		public string? Description { get; set; }
@@ -16,15 +16,9 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
 		public string? WebsiteLink { get; set; }
 		public string? TargetCustomer { get; set; }
 		public string? Zone { get; set; }
-		public string? CategoryId { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
-		public string Status { get; set; }
-		public Guid UserId { get; set; }
-	}
-
-	public class UpdateStatusRequest
-	{
-		public string Status { get; set; } // "1" for approved, "-1" for rejected
+		public string? CategoryId { get; set; }
+		public List<string> PayoutModelsId { get; set; } 
 	}
 }

@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SWD392_AffiliLinker.Core.Base;
-using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
 using SWD392_AffiliLinker.Services.Interfaces;
 using System.Threading.Tasks;
+using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 
 namespace SWD392_AffiliLinker.API.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/campaign")]
 	[ApiController]
 	public class CampaignController : ControllerBase
 	{
@@ -17,21 +20,12 @@ namespace SWD392_AffiliLinker.API.Controllers
 			_campaignService = campaignService;
 		}
 
-		[HttpGet("GetAll")]
-		public async Task<IActionResult> GetAllCampaigns()
-		{
-			try
-			{
-				var response = await _campaignService.GetAllCampaignsAsync();
-				return Ok(response);
-			}
-			catch (System.Exception ex)
-			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
-			}
-		}
-
-		[HttpGet("list_campaignid_name")]
+		/// <summary>
+		/// Publisher lấy danh sách chiến dịch đã join để tạo link.
+		/// </summary>
+		/// <returns>CampaignId and CampaignName</returns>
+		[HttpGet("list_join_campaign")]
+		[Authorize(Roles = "Publisher")]
 		public async Task<IActionResult> GetCampaignList()
 		{
 			try
@@ -69,8 +63,9 @@ namespace SWD392_AffiliLinker.API.Controllers
 			}
 		}
 
-		[HttpPost("Create")]
-		public async Task<IActionResult> CreateCampaign([FromBody] CampaignRequest request)
+		[HttpPost("create")]
+		[Authorize(Roles = "Advertiser")]
+		public async Task<IActionResult> CreateCampaign([FromBody] CreateCampaignRequest request)
 		{
 			try
 			{
@@ -162,17 +157,18 @@ namespace SWD392_AffiliLinker.API.Controllers
 			}
 		}
 
-		[HttpGet("filter")]
-		public async Task<IActionResult> FilterCampaigns(
-	[FromQuery] string? name,
-	[FromQuery] string? status,
-	[FromQuery] DateTime? startDate,
-	[FromQuery] DateTime? endDate)
+		/// <summary>
+		/// Admin get list campaign chưa duyệt.
+		/// </summary>
+		[HttpGet("get_wait_list")]
+		public async Task<ActionResult<BaseResponse<BasePaginatedList<CampaignResponse>>>> GetWaitList(
+	[FromQuery] int pageIndex,
+	[FromQuery] int pageSize)
 		{
 			try
 			{
-				var response = await _campaignService.FilterCampaignsAsync(name, status, startDate, endDate);
-				return Ok(response);
+				var response = await _campaignService.GetWaitCampaignList(pageIndex, pageSize);
+				return Ok(BaseResponse<BasePaginatedList<CampaignResponse>>.OkResponse(response, "Sucessful"));
 			}
 			catch (System.Exception ex)
 			{
@@ -180,8 +176,31 @@ namespace SWD392_AffiliLinker.API.Controllers
 			}
 		}
 
-		[HttpPatch("Status")]
-		public async Task<IActionResult> UpdateStatus(string id, [FromBody] UpdateStatusRequest request)
+
+		[HttpGet("filter")]
+		public async Task<ActionResult<BaseResponse<BasePaginatedList<CampaignFilterResponse>>>> FilterCampaigns(
+	[FromQuery] string? name,
+	[FromQuery] string? status,
+	[FromQuery] DateTime? startDate,
+	[FromQuery] DateTime? endDate,
+	[FromQuery] string? payoutMethodId,
+	[FromQuery] string? categoryId,
+	[FromQuery] int pageIndex,
+	[FromQuery] int pageSize)
+		{
+			try
+			{
+				var response = await _campaignService.FilterCampaignsAsync(name, status, startDate, endDate, payoutMethodId, categoryId, pageIndex, pageSize);
+				return Ok(BaseResponse<BasePaginatedList<CampaignFilterResponse>>.OkResponse(response, "Sucessful"));
+			}
+			catch (System.Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
+
+		[HttpPatch("status")]
+		public async Task<IActionResult> UpdateStatus(string id, CampaignStatus request)
 		{
 			try
 			{
@@ -190,18 +209,7 @@ namespace SWD392_AffiliLinker.API.Controllers
 					return BadRequest("ID cannot be null or empty");
 				}
 
-				if (request == null || string.IsNullOrEmpty(request.Status))
-				{
-					return BadRequest("Status cannot be null or empty");
-				}
-
-				// Validate status value
-				if (request.Status != "1" && request.Status != "-1")
-				{
-					return BadRequest("Status must be either '1' (approved) or '-1' (rejected)");
-				}
-
-				var response = await _campaignService.UpdateCampaignStatusAsync(id, request.Status);
+				var response = await _campaignService.UpdateCampaignStatusAsync(id, request);
 
 				if (response.Data == false)
 				{

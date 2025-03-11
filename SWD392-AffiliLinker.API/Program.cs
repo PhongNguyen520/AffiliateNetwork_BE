@@ -14,7 +14,6 @@ namespace SWD392_AffiliLinker.API
             var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
-			builder.Services.AddScoped<ICampaignService, CampaignService>();
 			builder.Services.AddConfig(builder.Configuration);
             builder.Services.AddRepositoryConfig().AddServiceConfig(builder.Configuration); ;
             builder.Configuration

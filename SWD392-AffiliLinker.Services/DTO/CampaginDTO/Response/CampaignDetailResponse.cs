@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Response
+namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
 {
-	public class CampaignResponse
+	public class CampaignDetailResponse
 	{
 		public string Id { get; set; }
 		public string CampaignName { get; set; }
@@ -19,16 +19,10 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Response
 		public decimal ConversionRate { get; set; }
 		public string? TargetCustomer { get; set; }
 		public string? Zone { get; set; }
-		public string? CategoryId { get; set; }
+		public string? CategoryName { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
+		public List<string> PayoutModelName { get; set; }
 		public string Status { get; set; }
-		public Guid UserId { get; set; }
-	}
-
-	public class CampaignListResponse
-	{
-		public string Id { get; set; }
-		public string CampaignName { get; set; }
 	}
 }

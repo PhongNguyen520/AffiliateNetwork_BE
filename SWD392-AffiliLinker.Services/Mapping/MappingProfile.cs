@@ -4,6 +4,8 @@ using SWD392_AffiliLinker.Repositories.Entities;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
 
 namespace SWD392_AffiliLinker.Services.Mapping
 {
@@ -26,6 +28,25 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<AffiliateLink, CreateLinkRequest>()
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)).ReverseMap();
 			CreateMap<AffiliateLink, GetLinksResponse>();
+			CreateMap<Campaign, CampaignRequest>();
+			CreateMap<Campaign, CampaignResponse>();
+			CreateMap<Campaign, CreateCampaignRequest>()
+				.ForMember(dest => dest.PayoutModelsId, opt => opt.MapFrom(src => src.CampaignPayoutModels.Select(cpm => cpm.PayoutModelId.ToString()).ToList()));
+			CreateMap<CreateCampaignRequest, Campaign>()
+				.ForMember(dest => dest.Id, opt => opt.Ignore())
+				.ForMember(dest => dest.EnrollCount, opt => opt.Ignore())
+				.ForMember(dest => dest.ConversionRate, opt => opt.Ignore())
+				.ForMember(dest => dest.Status, opt => opt.Ignore())
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.CampaignPayoutModels, opt => opt.Ignore())
+				.ForMember(dest => dest.CampaignMembers, opt => opt.Ignore())
+				.ForMember(dest => dest.AffiliateLinks, opt => opt.Ignore());
+			CreateMap<Campaign, CampaignDetailResponse>()
+				.ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+				.ForMember(dest => dest.PayoutModelName, opt => opt.MapFrom(src => src.CampaignPayoutModels
+				.Select(cpm => cpm.PayoutModel.Name).ToList()));
+			CreateMap<Campaign, CampaignFilterResponse>();
+
 		}
 	}
 }
