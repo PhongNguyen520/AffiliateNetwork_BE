@@ -17,6 +17,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 		Task<BaseResponse<bool>> DeleteCampaignAsync(string id);
 		Task<BaseResponse<IEnumerable<CampaignResponse>>> FilterCampaignsAsync(string? name, string? status, DateTime? startDate, DateTime? endDate);
 		Task<BaseResponse<IEnumerable<CampaignListResponse>>> GetAllCampaignIdsAndNamesAsync();
-
+		Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, string status);
 	}
+
 }

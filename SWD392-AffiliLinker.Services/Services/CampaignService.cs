@@ -41,11 +41,16 @@ namespace SWD392_AffiliLinker.Services
 					CategoryId = campaignRequest.CategoryId,
 					StartDate = campaignRequest.StartDate,
 					EndDate = campaignRequest.EndDate,
-					Status = campaignRequest.Status,
+					Status = "0",
 					UserId = campaignRequest.UserId,
 					EnrollCount = 0, // Initialize with default values
 					ConversionRate = 0 // Initialize with default values
 				};
+
+				if (string.IsNullOrEmpty(campaignRequest.CategoryId))
+				{
+					campaign.CategoryId = null;
+				}
 
 				await _unitOfWork.GetRepository<Campaign>().InsertAsync(campaign);
 
@@ -276,6 +281,34 @@ namespace SWD392_AffiliLinker.Services
 			catch (Exception ex)
 			{
 				return BaseResponse<IEnumerable<CampaignResponse>>.FailResponse(ex.Message);
+			}
+		}
+
+		public async Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, string status)
+		{
+			try
+			{
+				// Validate status value
+				if (status != "1" && status != "-1")
+				{
+					return BaseResponse<bool>.FailResponse("Status must be either '1' (approved) or '-1' (rejected)");
+				}
+
+				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
+				if (campaign == null)
+					return BaseResponse<bool>.FailResponse("Campaign not found");
+
+				// Update only the status
+				campaign.Status = status;
+
+				_unitOfWork.GetRepository<Campaign>().Update(campaign);
+				await _unitOfWork.SaveAsync();
+
+				return BaseResponse<bool>.OkResponse(true, $"Campaign status updated to {(status == "1" ? "approved" : "rejected")}");
+			}
+			catch (Exception ex)
+			{
+				return BaseResponse<bool>.FailResponse(ex.Message);
 			}
 		}
 	}

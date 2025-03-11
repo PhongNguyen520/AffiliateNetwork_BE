@@ -179,5 +179,41 @@ namespace SWD392_AffiliLinker.API.Controllers
 				return StatusCode(500, $"Internal server error: {ex.Message}");
 			}
 		}
+
+		[HttpPatch("Status")]
+		public async Task<IActionResult> UpdateStatus(string id, [FromBody] UpdateStatusRequest request)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(id))
+				{
+					return BadRequest("ID cannot be null or empty");
+				}
+
+				if (request == null || string.IsNullOrEmpty(request.Status))
+				{
+					return BadRequest("Status cannot be null or empty");
+				}
+
+				// Validate status value
+				if (request.Status != "1" && request.Status != "-1")
+				{
+					return BadRequest("Status must be either '1' (approved) or '-1' (rejected)");
+				}
+
+				var response = await _campaignService.UpdateCampaignStatusAsync(id, request.Status);
+
+				if (response.Data == false)
+				{
+					return NotFound(response.Message ?? $"Campaign with ID {id} not found or status update failed");
+				}
+
+				return Ok(response);
+			}
+			catch (System.Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
 	}
 }

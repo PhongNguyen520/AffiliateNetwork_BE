@@ -22,4 +22,9 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
 		public string Status { get; set; }
 		public Guid UserId { get; set; }
 	}
+
+	public class UpdateStatusRequest
+	{
+		public string Status { get; set; } // "1" for approved, "-1" for rejected
+	}
 }
