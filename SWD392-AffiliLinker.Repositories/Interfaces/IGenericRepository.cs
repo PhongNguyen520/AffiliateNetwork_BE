@@ -28,6 +28,7 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
         Task<T?> FindAsync(params object[] keyValues);
 
         Task<int> CountAsync();
+		IQueryable<T> GetAllQueryable();
 
-    }
+	}
 }

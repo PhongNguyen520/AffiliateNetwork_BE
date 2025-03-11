@@ -109,5 +109,10 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
         {
             return await _context.Set<T>().CountAsync();
         }
-    }
+
+		public IQueryable<T> GetAllQueryable()
+		{
+			return _context.Set<T>().AsQueryable();
+		}
+	}
 }

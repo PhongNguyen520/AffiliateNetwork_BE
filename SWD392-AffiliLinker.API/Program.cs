@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SWD392_AffiliLinker.Repositories;
 using SWD392_AffiliLinker.Repositories.Context;
 using SWD392_AffiliLinker.Services;
+using SWD392_AffiliLinker.Services.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace SWD392_AffiliLinker.API
@@ -12,9 +13,9 @@ namespace SWD392_AffiliLinker.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddConfig(builder.Configuration);
+			// Add services to the container.
+			builder.Services.AddScoped<ICampaignService, CampaignService>();
+			builder.Services.AddConfig(builder.Configuration);
             builder.Services.AddRepositoryConfig().AddServiceConfig(builder.Configuration); ;
             builder.Configuration
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -46,8 +47,8 @@ namespace SWD392_AffiliLinker.API
             }
 
 
-
-            app.UseHttpsRedirection();
+			
+			app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
