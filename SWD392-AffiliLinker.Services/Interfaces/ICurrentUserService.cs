@@ -1,4 +1,5 @@
 ﻿using SWD392_AffiliLinker.Repositories.Entities;
+using SWD392_AffiliLinker.Services.DTO.UserCurrentDTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace SWD392_AffiliLinker.Services.Interfaces
         string GetUserId();
         string getUserEmail();
         Task<User> GetCurrentAccountAsync();
+        Task<InfoClientResponse> GetClientInfo();
     }
 }

@@ -21,7 +21,7 @@ namespace SWD392_AffiliLinker.API.Controllers
 		/// <summary>
 		/// Publisher join campaign
 		/// </summary>
-		[HttpPost("join/{id}")]
+		[HttpPost("{id}/join")]
 		[Authorize(Roles = "Publisher")]
 		public async Task<ActionResult<BaseResponse<string>>> JoinCampaign(string id)
 		{

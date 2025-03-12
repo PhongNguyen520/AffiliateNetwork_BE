@@ -6,6 +6,12 @@ using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Response;
 
 namespace SWD392_AffiliLinker.Services.Mapping
 {
@@ -46,7 +52,12 @@ namespace SWD392_AffiliLinker.Services.Mapping
 				.ForMember(dest => dest.PayoutModelName, opt => opt.MapFrom(src => src.CampaignPayoutModels
 				.Select(cpm => cpm.PayoutModel.Name).ToList()));
 			CreateMap<Campaign, CampaignFilterResponse>();
-
+			CreateMap<PayoutModel, CreatePayoutModelRequest>().ReverseMap();
+			CreateMap<PayoutModel, GetPayoutModelsResponse>().ReverseMap();
+			CreateMap<CampaignCategory, CreateCategoryRequest>().ReverseMap();
+			CreateMap<CampaignCategory, GetCategoriesResponse>().ReverseMap();
+			CreateMap<ClickInfo, ClickInfoRequest>().ReverseMap();
+			CreateMap<ClickInfo, ExcelClickInfoResponse>().ReverseMap();
 		}
 	}
 }

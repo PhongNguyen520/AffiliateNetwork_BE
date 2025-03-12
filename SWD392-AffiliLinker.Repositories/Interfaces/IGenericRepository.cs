@@ -30,6 +30,8 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
 
         Task<int> CountAsync();
         Task<IList<T>> SearchAsync(Expression<Func<T, bool>> filter);
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> param);
 
-	}
+
+    }
 }
