@@ -33,6 +33,8 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<ICampaignService, CampaignService>();
 			services.AddScoped<ICampaignMemberService, CampaignMemberService>();
+			services.AddScoped<IPayoutModelService, PayoutModelService>();
+			services.AddScoped<ICategoryService, CategoryService>();
 		}
 
         public static void AddAutoMapperConfig(this IServiceCollection services)

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
 using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Core.Store;
 using SWD392_AffiliLinker.Core.Utils;
@@ -37,13 +38,11 @@ namespace SWD392_AffiliLinker.Services.Services
 				string userId = _currentUserService.GetUserId();
 				if (string.IsNullOrEmpty(userId))
 				{
-					_unitOfWork.RollBack();
 					throw new BaseException.ErrorException(StatusCodes.Unauthorized, StatusCodes.Unauthorized.Name(), "Login to continue");
 				}
 				Campaign? campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(request.CampaignId);
 				if (campaign == null)
 				{
-					_unitOfWork.RollBack();
 					throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), "Campaign doesn't exist!");
 				}
 				request.Status = LinkStatus.Active;
@@ -59,7 +58,8 @@ namespace SWD392_AffiliLinker.Services.Services
 
 				if (!string.IsNullOrEmpty(request.OptimizeUrl))
 				{
-					result.OptimizeUrl = request.OptimizeUrl.Replace(" ", "-").ToLower();
+					var slug = request.OptimizeUrl.Replace(" ", "-").ToLower();
+					result.OptimizeUrl = await GenerateUniqueSlug(slug);
 				}
 				await _unitOfWork.GetRepository<AffiliateLink>().InsertAsync(result);
 				await _unitOfWork.SaveAsync();
@@ -87,7 +87,6 @@ namespace SWD392_AffiliLinker.Services.Services
 				var userId = _currentUserService.GetUserId();
 				if (string.IsNullOrEmpty(userId))
 				{
-					_unitOfWork.RollBack();
 					throw new BaseException.ErrorException(StatusCodes.Unauthorized, StatusCodes.Unauthorized.Name(), "Login to continue");
 				}
 				var repository = _unitOfWork.GetRepository<AffiliateLink>();
@@ -107,6 +106,18 @@ namespace SWD392_AffiliLinker.Services.Services
 			}
 		}
 
+		public async Task<string> RedirectShortenUrl(string? shortenCode)
+		{
+			var result = _unitOfWork.GetRepository<AffiliateLink>().Entities.FirstOrDefault(s => s.ShortenUrl == shortenCode);
+			return result.Url;
+		}
+
+		public async Task<string> RedirectOptimizeUrl(string? slug)
+		{
+			var result = _unitOfWork.GetRepository<AffiliateLink>().Entities.FirstOrDefault(s => s.OptimizeUrl == slug);
+			return result.Url;
+		}
+
 		public string GetShortenUrl(string shortCode) => $"{_options.Value.ShortenDomain}{shortCode}";
 		public string GetOptimizeUrl(string optimizeCode) => $"{_options.Value.OptimizeDomain}{optimizeCode}";
 		public async Task<string> GenerateShortCodeAsync()
@@ -119,6 +130,28 @@ namespace SWD392_AffiliLinker.Services.Services
 
 			return shortCode;
 		}
+
+		public async Task<string> GenerateUniqueSlug(string slug)
+		{
+			var existingSlugs = await _unitOfWork.GetRepository<AffiliateLink>()
+				.Entities
+				.Where(s => s.OptimizeUrl.StartsWith(slug))
+				.Select(s => s.OptimizeUrl)
+				.ToListAsync();
+
+			if (!existingSlugs.Contains(slug))
+				return slug;
+
+			int count = 1;
+			string newSlug;
+			do
+			{
+				newSlug = $"{slug}-{count++}";
+			} while (existingSlugs.Contains(newSlug));
+
+			return newSlug;
+		}
+
 
 		private static string GenerateBase62Code(int length)
 		{

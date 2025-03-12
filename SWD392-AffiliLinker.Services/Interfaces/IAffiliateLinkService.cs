@@ -13,5 +13,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 	{
 		Task<CreateLinkResponse> CreateLink(CreateLinkRequest request);
 		Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int? pageIndex, int? pageSize);
+		Task<string> RedirectOptimizeUrl(string? slug);
+		Task<string> RedirectShortenUrl(string? shortenCode);
 	}
 }
