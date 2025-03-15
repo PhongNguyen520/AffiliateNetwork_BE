@@ -24,6 +24,7 @@ namespace SWD392_AffiliLinker.API
 			services.ConfigureIdentity();
 			services.AddAuthenticationBearer(configuration);
 			services.AddDatabase(configuration);
+            services.AddCors();
         }
 
 		public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -146,7 +147,21 @@ namespace SWD392_AffiliLinker.API
 			});
 			});
 		}
-	}
+
+        public static void AddCors(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000", "https://affiliate-networking.vercel.app")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
+            });
+        }
+    }
 
 }
 
