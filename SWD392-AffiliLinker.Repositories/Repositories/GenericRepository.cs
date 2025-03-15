@@ -63,7 +63,7 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
 			int pageIndex = (index > 0 ? index : 1) ?? 1;
             int pageSizeValue = (pageSize > 0 ? pageSize : 6) ?? 6;
 
-			IReadOnlyCollection<T> items = await query
+			List<T> items = await query
 				.Skip((pageIndex - 1) * pageSizeValue)
 				.Take(pageSizeValue)
 				.ToListAsync();
@@ -92,7 +92,11 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
 
         public async Task SaveAsync()
         {
-            await _context.SaveChangesAsync();
+            var check = await _context.SaveChangesAsync();
+            if(check == 0)
+            {
+                throw new Exception("Don't SaveChange!!!");
+            }
         }
 
         public async Task<T?> FindAsync(params object[] keyValues) => await _dbSet.FindAsync(keyValues);
@@ -115,5 +119,10 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
         {
             return await _context.Set<T>().CountAsync();
         }
-	}
+
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> param)
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(param);
+        }
+    }
 }

@@ -43,5 +43,11 @@ namespace SWD392_AffiliLinker.Core.Store
 			Active,
 			Stop
 		}
+
+		public enum ClickInfoStatus
+		{
+			Valid,
+			Invalid
+		}
 	}
 }
