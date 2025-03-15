@@ -8,7 +8,7 @@ namespace SWD392_AffiliLinker.Core.Base
 {
 	public class BasePaginatedList<T>
 	{
-		public IReadOnlyCollection<T> Items { get; private set; }
+		public List<T> Items { get; set; }
 
 		// Thuộc tính để lưu trữ tổng số phần tử
 		public int TotalItems { get; private set; }
@@ -22,8 +22,9 @@ namespace SWD392_AffiliLinker.Core.Base
 		// Thuộc tính để lưu trữ số phần tử trên mỗi trang
 		public int? PageSize { get; private set; }
 
-		// Constructor để khởi tạo danh sách phân trang
-		public BasePaginatedList(IReadOnlyCollection<T> items, int count, int? pageNumber, int? pageSize)
+        // Constructor để khởi tạo danh sách phân trang
+        public BasePaginatedList() { }
+        public BasePaginatedList(List<T> items, int count, int? pageNumber, int? pageSize)
 		{
 			TotalItems = count;
 			CurrentPage = (pageNumber > 0 ? pageNumber : 1) ?? 1;

@@ -57,7 +57,9 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<CampaignCategory, CreateCategoryRequest>().ReverseMap();
 			CreateMap<CampaignCategory, GetCategoriesResponse>().ReverseMap();
 			CreateMap<ClickInfo, ClickInfoRequest>().ReverseMap();
+			CreateMap<ClickInfo, TotalClickInfoResponse>().ReverseMap();
 			CreateMap<ClickInfo, ExcelClickInfoResponse>().ReverseMap();
+			CreateMap<BasePaginatedList<ClickInfo>, BasePaginatedList<TotalClickInfoResponse>>().ReverseMap();
 		}
 	}
 }

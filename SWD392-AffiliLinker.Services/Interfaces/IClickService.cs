@@ -1,5 +1,7 @@
-﻿using SWD392_AffiliLinker.Repositories.Entities;
+﻿using SWD392_AffiliLinker.Core.Base;
+using SWD392_AffiliLinker.Repositories.Entities;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,6 @@ namespace SWD392_AffiliLinker.Services.Interfaces
     {
         Task CreateClickInfo(ClickInfoRequest request);
 
-
+        Task<BasePaginatedList<TotalClickInfoResponse>> GetTotalClickInfo(TotalClickInfoRequest request);
     }
 }

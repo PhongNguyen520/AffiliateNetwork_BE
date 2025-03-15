@@ -63,7 +63,7 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
 			int pageIndex = (index > 0 ? index : 1) ?? 1;
             int pageSizeValue = (pageSize > 0 ? pageSize : 6) ?? 6;
 
-			IReadOnlyCollection<T> items = await query
+			List<T> items = await query
 				.Skip((pageIndex - 1) * pageSizeValue)
 				.Take(pageSizeValue)
 				.ToListAsync();
