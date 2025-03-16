@@ -6,7 +6,7 @@ pipeline{
             steps {
             echo 'Verifying Docker installation'
                 sh 'docker --version' 
-                git 'https://github.com/PhongNguyen520/Jenkins.git'
+                git 'https://github.com/PhongNguyen520/AffiliateCICD.git'
             }
         }
 
