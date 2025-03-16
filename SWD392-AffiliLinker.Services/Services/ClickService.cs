@@ -109,12 +109,11 @@ namespace SWD392_AffiliLinker.Services.Services
                     }
                     listDB = listDB.Where(_ => _.CreatedTime.Date <= request.EndDate.Value.Date);
                 }
+                var pagingList = await _unitOfWork.GetRepository<ClickInfo>().GetPagging(listDB, request.Index, request.Size);
 
-                var result = await _unitOfWork.GetRepository<ClickInfo>().GetPagging(listDB, request.Index, request.Size);
+                var result = _mapper.Map<BasePaginatedList<TotalClickInfoResponse>>(pagingList);
 
-                var h = _mapper.Map<BasePaginatedList<TotalClickInfoResponse>>(result);
-
-                return h;
+                return result;
                 
             }
             catch

@@ -49,5 +49,12 @@ namespace SWD392_AffiliLinker.Core.Store
 			Valid,
 			Invalid
 		}
-	}
+
+        public enum ConversionStatus
+        {
+            Approved,
+            Pending,
+            Provisionally
+        }
+    }
 }

@@ -72,7 +72,7 @@ namespace SWD392_AffiliLinker.Services.Services
         }
 
 
-        public Task<InfoClientResponse> GetClientInfo()
+            public Task<InfoClientResponse> GetClientInfo()
         {
             var context = _httpContextAccessor.HttpContext;
             if (context == null)

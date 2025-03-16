@@ -10,6 +10,8 @@ using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Response;
 
@@ -60,6 +62,9 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<ClickInfo, TotalClickInfoResponse>().ReverseMap();
 			CreateMap<ClickInfo, ExcelClickInfoResponse>().ReverseMap();
 			CreateMap<BasePaginatedList<ClickInfo>, BasePaginatedList<TotalClickInfoResponse>>().ReverseMap();
+			CreateMap<Conversion, CreateConversion>().ReverseMap();
+			CreateMap<Conversion, ConversionResponse>().ReverseMap();
+			CreateMap<BasePaginatedList<Conversion>, BasePaginatedList<ConversionResponse>>().ReverseMap();
 		}
 	}
 }
