@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  swd392-affililinker.api:
+    image: ${DOCKER_REGISTRY-}swd392affililinkerapi
+    build:
+      context: .
+      dockerfile: SWD392-AffiliLinker.API/Dockerfile
+    environment:
+      - ConnectionStrings__MyDB=Server=host.docker.internal;Database=AffiLinkerDB;UID=sa;PWD=12345;TrustServerCertificate=True
+    ports:
+      - "8082:80"

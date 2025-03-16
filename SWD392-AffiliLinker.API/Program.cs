@@ -37,11 +37,11 @@ namespace SWD392_AffiliLinker.API
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-                dbContext.Database.Migrate();
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+            //    dbContext.Database.Migrate();
+            //}
 
             if (app.Environment.IsDevelopment())
             {
