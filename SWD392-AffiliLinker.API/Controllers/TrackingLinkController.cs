@@ -2,8 +2,10 @@
 using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Core.Store;
 using SWD392_AffiliLinker.Core.Utils;
+using SWD392_AffiliLinker.Repositories.Entities;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.UserCurrentDTO.Response;
 using SWD392_AffiliLinker.Services.Interfaces;
 using static SWD392_AffiliLinker.Core.Store.EnumStatus;
@@ -149,5 +151,5 @@ namespace SWD392_AffiliLinker.API.Controllers
                 });
             }
         }
-	}
+    }
 }

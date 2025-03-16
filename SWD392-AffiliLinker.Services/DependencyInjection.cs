@@ -37,6 +37,8 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<ICategoryService, CategoryService>();
 			services.AddScoped<IClickService, ClickService>();
 			services.AddScoped<ICookieService, CookieService>();
+			services.AddScoped<IExportTrafficService, ExportTrafficService>();
+			services.AddScoped<IConversionService, ConversionService>();
 		}
 
         public static void AddAutoMapperConfig(this IServiceCollection services)
