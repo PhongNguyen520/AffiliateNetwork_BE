@@ -1,6 +1,10 @@
-pipeline {
-    agent any
-
+pipeline{
+     agent {
+        docker {
+            image 'mcr.microsoft.com/dotnet/sdk:6.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Bind Docker socket
+        }
+    }
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub') // Sử dụng credentials Docker Hub
         DOCKER_IMAGE = 'nguyenphong203/affiliate_networking' // Tên image trên Docker Hub
