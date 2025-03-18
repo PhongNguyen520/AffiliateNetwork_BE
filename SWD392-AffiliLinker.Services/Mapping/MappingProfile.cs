@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Repositories.Entities;
+using SWD392_AffiliLinker.Services.DTO.AccountDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
@@ -65,6 +66,16 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<Conversion, CreateConversion>().ReverseMap();
 			CreateMap<Conversion, ConversionResponse>().ReverseMap();
 			CreateMap<BasePaginatedList<Conversion>, BasePaginatedList<ConversionResponse>>().ReverseMap();
-		}
+			CreateMap<User, AccountResponse>().ReverseMap();
+			CreateMap<Publisher, PublisherAccountResponse>()
+				.ForMember(dest => dest.PublisherId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+				.ReverseMap();
+			CreateMap<Advertiser, AdvertiserAccountResponse>()
+                .ForMember(dest => dest.AdvertiserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+                .ReverseMap();
+            CreateMap<BasePaginatedList<User>, BasePaginatedList<AccountResponse>>().ReverseMap();
+        }
 	}
 }

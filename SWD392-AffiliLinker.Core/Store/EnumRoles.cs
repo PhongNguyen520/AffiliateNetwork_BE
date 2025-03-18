@@ -15,4 +15,11 @@ namespace SWD392_AffiliLinker.Core.Store
         [EnumMember(Value = "Advertiser")]
         Advertiser,
     }
+
+    public enum RoleFillterAccount
+    {
+        Advertiser,
+        Publisher,
+        Admin
+    }
 }
