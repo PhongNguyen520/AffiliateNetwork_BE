@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -19,7 +20,20 @@ namespace SWD392_AffiliLinker.Services
 			services.AddServices();
 			services.AddAutoMapperConfig();
 			services.AddOtherServiceConfig(configuration);
-		}
+
+
+            var cloudinarySettings = configuration.GetRequiredSection("Cloudinary");
+            var account = new Account(
+                cloudinarySettings["CloudName"],
+                cloudinarySettings["ApiKey"],
+                cloudinarySettings["ApiSecret"]
+            );
+            var cloudinary = new Cloudinary(account);
+
+            // Đăng ký Cloudinary vào DI container
+            services.AddSingleton(cloudinary);
+        }
+
 
 
 		public static void AddServices(this IServiceCollection services)
@@ -39,6 +53,7 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<ICookieService, CookieService>();
 			services.AddScoped<IExportTrafficService, ExportTrafficService>();
 			services.AddScoped<IConversionService, ConversionService>();
+			services.AddScoped<IHepperUploadImage, HepperUploadImage>();
 			services.AddScoped<IAccountService, AccountService>();
 		}
 

@@ -32,7 +32,7 @@ namespace SWD392_AffiliLinker.Services.Services
 				new Claim(ClaimTypes.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 				new Claim("FullName", fullName),
-				new Claim("Avatar", user.Avatar),
+				new Claim("Avatar", user.Avatar ?? ""),
             };
 
 			IEnumerable<string> roles = await _userManager.GetRolesAsync(user);

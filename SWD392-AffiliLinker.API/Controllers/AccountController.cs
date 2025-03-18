@@ -88,5 +88,33 @@ namespace SWD392_AffiliLinker.API.Controllers
                 });
             }
         }
+
+        [HttpPut("{id}/avatar")]
+        public async Task<IActionResult> UpdateAvater (IFormFile avatar, string id)
+        {
+            try
+            {
+                var result = await _accountService.UpdateAvatar(id, avatar);
+                return Ok(BaseResponse<string>.OkResponse(result, "OK"));
+            }
+            catch (BaseException.ErrorException ex)
+            {
+                return StatusCode((int)ex.StatusCode, new BaseResponse<string>
+                {
+                    StatusCode = ex.StatusCode,
+                    Message = ex.ErrorDetail.ErrorMessage.ToString(),
+                    Code = (int)ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new BaseResponse<string>
+                {
+                    StatusCode = Core.Store.StatusCodes.ServerError,
+                    Message = ex.Message,
+                    Code = (int)Core.Store.StatusCodes.ServerError
+                });
+            }
+        }
     }
 }
