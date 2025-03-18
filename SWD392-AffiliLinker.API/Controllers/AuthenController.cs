@@ -17,12 +17,14 @@ namespace SWD392_AffiliLinker.API.Controllers
         private readonly IAuthenticationService _authenticationService;
         private readonly ILogger<AuthController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IHepperUploadImage _hepperUploadImage;
 
-        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger, ICurrentUserService currentUserService)
+        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger, ICurrentUserService currentUserService, IHepperUploadImage hepperUploadImage)
         {
             _authenticationService = authenticationService;
             _logger = logger;
             _currentUserService = currentUserService;
+            _hepperUploadImage = hepperUploadImage;
         }
 
 
@@ -214,6 +216,18 @@ namespace SWD392_AffiliLinker.API.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File không hợp lệ!");
+
+            using var stream = file.OpenReadStream();
+            var imageUrl = await _hepperUploadImage.UploadImageAsync(stream, file.FileName);
+
+            return Ok(new { Url = imageUrl });
         }
     }
 }

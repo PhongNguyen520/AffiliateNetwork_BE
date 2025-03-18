@@ -9,6 +9,7 @@ using SWD392_AffiliLinker.Repositories.IUOW;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Response;
 using SWD392_AffiliLinker.Services.Interfaces;
+using System.IO;
 using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 using StatusCodes = SWD392_AffiliLinker.Core.Store.StatusCodes;
 
@@ -22,8 +23,9 @@ namespace SWD392_AffiliLinker.Services.Services
 		private readonly IJwtTokenService _jwtTokenService;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
+        private readonly IHepperUploadImage _hepperUploadImage;
 
-		public AuthenticationService(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, SignInManager<User> signInManager, IJwtTokenService jwtTokenService, IMapper mapper, IUnitOfWork unitOfWork)
+		public AuthenticationService(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, SignInManager<User> signInManager, IJwtTokenService jwtTokenService, IMapper mapper, IUnitOfWork unitOfWork, IHepperUploadImage hepperUploadImage)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;
@@ -31,6 +33,7 @@ namespace SWD392_AffiliLinker.Services.Services
 			_jwtTokenService = jwtTokenService;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
+            _hepperUploadImage = hepperUploadImage;
 		}
 
 
@@ -62,6 +65,7 @@ namespace SWD392_AffiliLinker.Services.Services
 					StatusCodes.BadRequest.Name(), "PhoneNumber is existed!");
 			}
             #endregion
+            using var stream = registerModelView.Avatar.OpenReadStream();
 
             User? newUser = _mapper.Map<User>(registerModelView);
 
@@ -70,6 +74,8 @@ namespace SWD392_AffiliLinker.Services.Services
             newUser.LastUpdatedTime = newUser.CreatedTime;
             newUser.Publisher.LastUpdatedTime = newUser.CreatedTime;
             newUser.Publisher.CreatedTime = newUser.CreatedTime;
+
+            newUser.Avatar = await _hepperUploadImage.UploadImageAsync(stream, registerModelView.Avatar.FileName);
 
             IdentityResult? result = await _userManager.CreateAsync(newUser, registerModelView.Password);
 			if (result.Succeeded)
@@ -132,6 +138,9 @@ namespace SWD392_AffiliLinker.Services.Services
             newUser.Advertiser.LastUpdatedTime = newUser.CreatedTime;
             newUser.Advertiser.CreatedTime = newUser.CreatedTime;
 
+            using var stream = registerModelView.Avatar.OpenReadStream();
+            newUser.Avatar = await _hepperUploadImage.UploadImageAsync(stream, registerModelView.Avatar.FileName);
+
             IdentityResult? result = await _userManager.CreateAsync(newUser, registerModelView.Password);
             if (result.Succeeded)
             {
@@ -189,7 +198,10 @@ namespace SWD392_AffiliLinker.Services.Services
                 newUser.CreatedTime = DateTime.Now;
                 newUser.LastUpdatedTime = newUser.CreatedTime;
 
-				var result = await _userManager.CreateAsync(newUser, registerModelView.Password);
+                using var stream = registerModelView.Avatar.OpenReadStream();
+                newUser.Avatar = await _hepperUploadImage.UploadImageAsync(stream, registerModelView.Avatar.FileName);
+
+                var result = await _userManager.CreateAsync(newUser, registerModelView.Password);
                 if (result.Succeeded)
                 {
                     bool roleExist = await _roleManager.RoleExistsAsync("Admin");
