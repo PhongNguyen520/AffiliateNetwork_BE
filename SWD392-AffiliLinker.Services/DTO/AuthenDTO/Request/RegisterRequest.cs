@@ -43,8 +43,6 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public IFormFile Avatar { get; set; } = null!;
     }
 
 
@@ -82,8 +80,6 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public IFormFile Avatar { get; set; } = null!;
         public virtual AdvertiserRequest AdvertiserRequest { get; set; }
     }
 
@@ -140,8 +136,6 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public IFormFile Avatar { get; set; } = null!;
         public virtual PublisherRequest PublisherRequest { get; set; }
     }
 

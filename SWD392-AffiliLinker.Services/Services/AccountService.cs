@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SWD392_AffiliLinker.Core.Base;
@@ -15,6 +16,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StatusCodes = SWD392_AffiliLinker.Core.Store.StatusCodes;
 
 namespace SWD392_AffiliLinker.Services.Services
 {
@@ -23,12 +25,14 @@ namespace SWD392_AffiliLinker.Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly IHepperUploadImage _hepperUploadImage;
 
-        public AccountService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<User> userManager)
+        public AccountService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<User> userManager, IHepperUploadImage hepperUploadImage)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _hepperUploadImage = hepperUploadImage;
         }
         public async Task<AdvertiserAccountResponse> GetAdvertiserUserById(string id)
         {
@@ -96,6 +100,31 @@ namespace SWD392_AffiliLinker.Services.Services
             }
             catch
             {
+                throw;
+            }
+        }
+
+        public async Task<string> UpdateAvatar(string userId, IFormFile file)
+        {
+            _unitOfWork.BeginTransaction();
+            try
+            {
+                var userDb = await _unitOfWork.GetRepository<User>().FirstOrDefaultAsync(_ => _.Id.ToString() == userId);
+                if (userDb is null)
+                {
+                    throw new BaseException.ErrorException(StatusCodes.NotFound, StatusCodes.NotFound.Name(), "User not exist!!!");
+                }
+                using var stream = file.OpenReadStream();
+                var url = await _hepperUploadImage.UploadImageAsync(stream, file.FileName);
+
+                userDb.Avatar = url;
+                await _unitOfWork.SaveAsync();
+                _unitOfWork.CommitTransaction();
+                return userDb.Avatar;
+            }
+            catch
+            {
+                _unitOfWork.RollBack();
                 throw;
             }
         }

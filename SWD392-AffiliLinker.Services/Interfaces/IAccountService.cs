@@ -1,4 +1,5 @@
-﻿using SWD392_AffiliLinker.Core.Base;
+﻿using Microsoft.AspNetCore.Http;
+using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Services.DTO.AccountDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.AccountDTO.Response;
 using System;
@@ -14,5 +15,6 @@ namespace SWD392_AffiliLinker.Services.Interfaces
         Task<PublisherAccountResponse> GetPublisherUserById (string id);
         Task<AdvertiserAccountResponse> GetAdvertiserUserById (string id);
         Task<BasePaginatedList<AccountResponse>> GetAll (FillterAccountRequest request);
+        Task<string> UpdateAvatar(string userId, IFormFile file);
     }
 }

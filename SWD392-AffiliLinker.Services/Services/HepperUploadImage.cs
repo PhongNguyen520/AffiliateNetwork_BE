@@ -23,7 +23,7 @@ namespace SWD392_AffiliLinker.Services.Services
         {
             if (fileStream == null || fileStream.Length == 0)
             {
-                throw new Exception("File ảnh không hợp lệ!");
+                throw new Exception("File is invalid!");
             }
 
             var uploadParams = new ImageUploadParams()
@@ -34,12 +34,9 @@ namespace SWD392_AffiliLinker.Services.Services
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-            // LOG RESPONSE ĐỂ XEM LỖI
-            Console.WriteLine($"Upload Response: {Newtonsoft.Json.JsonConvert.SerializeObject(uploadResult)}");
-
             if (uploadResult == null || uploadResult.SecureUrl == null)
             {
-                throw new Exception("Upload thất bại, kiểm tra lại API Key hoặc file upload!");
+                throw new Exception("Upload fail, check API Key or file upload again!");
             }
 
             return uploadResult.SecureUrl.AbsoluteUri;
