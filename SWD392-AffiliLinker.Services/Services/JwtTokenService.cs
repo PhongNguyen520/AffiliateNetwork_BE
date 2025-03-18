@@ -24,11 +24,15 @@ namespace SWD392_AffiliLinker.Services.Services
 		{
 			var key = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]) ?? throw new Exception("JWT_KEY is not set");
 
+			var fullName = user.FirstName + " " + user.LastName;
+
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+				new Claim("FullName", fullName),
+				new Claim("Avatar", user.Avatar),
             };
 
 			IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
