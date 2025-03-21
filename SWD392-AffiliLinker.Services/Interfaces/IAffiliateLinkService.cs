@@ -16,5 +16,6 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 		Task<BasePaginatedList<GetLinksResponse>> GetPublisherLinkList(int? pageIndex, int? pageSize);
 		Task<AffiLinkClickResponse> RedirectOptimizeUrl(string? slug);
 		Task<AffiLinkClickResponse> RedirectShortenUrl(string? shortenCode);
+		Task<BasePaginatedList<GetLinksResponse>> GetLinkListByCampaignId(FilterLinkRequest request);
 	}
 }

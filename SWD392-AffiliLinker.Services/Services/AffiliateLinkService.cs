@@ -107,7 +107,33 @@ namespace SWD392_AffiliLinker.Services.Services
             }
         }
 
-        public async Task<AffiLinkClickResponse> RedirectShortenUrl(string? shortenCode)
+		public async Task<BasePaginatedList<GetLinksResponse>> GetLinkListByCampaignId(FilterLinkRequest request)
+		{
+			try
+			{
+				var userId = _currentUserService.GetUserId();
+				if (string.IsNullOrEmpty(userId))
+				{
+					throw new BaseException.ErrorException(StatusCodes.Unauthorized, StatusCodes.Unauthorized.Name(), "Login to continue");
+				}
+				var repository = _unitOfWork.GetRepository<AffiliateLink>();
+				IQueryable<AffiliateLink>? query = repository.Entities.Where(s => s.CampaignId == request.id && s.UserId == Guid.Parse(userId));
+				BasePaginatedList<AffiliateLink>? pagingList = await repository.GetPagging(query, request.PageIndex, request.PageSize);
+				List<GetLinksResponse> result = _mapper.Map<List<GetLinksResponse>>(pagingList.Items);
+				foreach (var link in result)
+				{
+					link.ShortenUrl = GetShortenUrl(link.ShortenUrl);
+					link.OptimizeUrl = GetOptimizeUrl(link.OptimizeUrl);
+				}
+                return new BasePaginatedList<GetLinksResponse>(result, pagingList.TotalItems, pagingList.CurrentPage, pagingList.PageSize);
+			}
+			catch (Exception ex)
+			{
+				throw;
+			}
+		}
+
+		public async Task<AffiLinkClickResponse> RedirectShortenUrl(string? shortenCode)
         {
             try
             {

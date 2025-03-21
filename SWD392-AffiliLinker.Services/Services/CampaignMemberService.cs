@@ -29,7 +29,7 @@ namespace SWD392_AffiliLinker.Services.Services
 			_unitOfWork.BeginTransaction();
 			try
 			{
-				var campaign = _unitOfWork.GetRepository<Campaign>().FindAsync(campaignId);
+				var campaign = await  _unitOfWork.GetRepository<Campaign>().FindAsync(campaignId);
 
 				if (campaign == null)
 				{
