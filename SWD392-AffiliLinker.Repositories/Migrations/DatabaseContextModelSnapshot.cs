@@ -266,7 +266,7 @@ namespace SWD392_AffiliLinker.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AffiliateLinks", (string)null);
+                    b.ToTable("AffiliateLinks");
                 });
 
             modelBuilder.Entity("SWD392_AffiliLinker.Repositories.Entities.Bank", b =>
@@ -991,7 +991,6 @@ namespace SWD392_AffiliLinker.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 

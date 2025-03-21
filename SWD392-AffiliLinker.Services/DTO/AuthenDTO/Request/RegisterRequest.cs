@@ -1,4 +1,5 @@
-﻿using SWD392_AffiliLinker.Repositories.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using SWD392_AffiliLinker.Repositories.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,11 +43,10 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public string Avatar { get; set; } = null!;
     }
 
-	public class AdvertiserRegisterRequest
+
+    public class AdvertiserRegisterRequest
     {
         [Required(ErrorMessage = "UserName is required")]
         [MinLength(3, ErrorMessage = "UserName must be at least 3 characters long")]
@@ -80,8 +80,6 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public string Avatar { get; set; } = null!;
         public virtual AdvertiserRequest AdvertiserRequest { get; set; }
     }
 
@@ -138,8 +136,6 @@ namespace SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format!")]
         public DateTime DOB { get; set; }
-
-        public string Avatar { get; set; } = null!;
         public virtual PublisherRequest PublisherRequest { get; set; }
     }
 

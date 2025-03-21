@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Repositories.Entities;
+using SWD392_AffiliLinker.Services.DTO.AccountDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.AffiliateLinkDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.AuthenDTO.Request;
@@ -8,6 +9,10 @@ using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Response;
 
@@ -54,6 +59,23 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<PayoutModel, GetPayoutModelsResponse>().ReverseMap();
 			CreateMap<CampaignCategory, CreateCategoryRequest>().ReverseMap();
 			CreateMap<CampaignCategory, GetCategoriesResponse>().ReverseMap();
-		}
+			CreateMap<ClickInfo, ClickInfoRequest>().ReverseMap();
+			CreateMap<ClickInfo, TotalClickInfoResponse>().ReverseMap();
+			CreateMap<ClickInfo, ExcelClickInfoResponse>().ReverseMap();
+			CreateMap<BasePaginatedList<ClickInfo>, BasePaginatedList<TotalClickInfoResponse>>().ReverseMap();
+			CreateMap<Conversion, CreateConversion>().ReverseMap();
+			CreateMap<Conversion, ConversionResponse>().ReverseMap();
+			CreateMap<BasePaginatedList<Conversion>, BasePaginatedList<ConversionResponse>>().ReverseMap();
+			CreateMap<User, AccountResponse>().ReverseMap();
+			CreateMap<Publisher, PublisherAccountResponse>()
+				.ForMember(dest => dest.PublisherId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+				.ReverseMap();
+			CreateMap<Advertiser, AdvertiserAccountResponse>()
+                .ForMember(dest => dest.AdvertiserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+                .ReverseMap();
+            CreateMap<BasePaginatedList<User>, BasePaginatedList<AccountResponse>>().ReverseMap();
+        }
 	}
 }

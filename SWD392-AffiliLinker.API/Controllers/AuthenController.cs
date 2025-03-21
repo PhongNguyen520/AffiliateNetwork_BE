@@ -17,12 +17,14 @@ namespace SWD392_AffiliLinker.API.Controllers
         private readonly IAuthenticationService _authenticationService;
         private readonly ILogger<AuthController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IHepperUploadImage _hepperUploadImage;
 
-        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger, ICurrentUserService currentUserService)
+        public AuthController(IAuthenticationService authenticationService, ILogger<AuthController> logger, ICurrentUserService currentUserService, IHepperUploadImage hepperUploadImage)
         {
             _authenticationService = authenticationService;
             _logger = logger;
             _currentUserService = currentUserService;
+            _hepperUploadImage = hepperUploadImage;
         }
 
 

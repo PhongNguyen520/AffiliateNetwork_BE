@@ -8,7 +8,7 @@ namespace SWD392_AffiliLinker.Repositories.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DOB { get; set; }
-        public string Avatar { get; set; }
+        public string? Avatar { get; set; }
         public string Status { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<Notification> Notification { get; set; }

@@ -25,11 +25,13 @@ namespace SWD392_AffiliLinker.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddControllers()
                             .AddJsonOptions(options =>
                             {
                                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                             });
+
 
             builder.Services.AddHttpContextAccessor();
 
@@ -47,9 +49,9 @@ namespace SWD392_AffiliLinker.API
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowSpecificOrigins");
 
-			
-			app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
 

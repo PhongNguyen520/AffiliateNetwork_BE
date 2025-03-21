@@ -43,5 +43,18 @@ namespace SWD392_AffiliLinker.Core.Store
 			Active,
 			Stop
 		}
-	}
+
+		public enum ClickInfoStatus
+		{
+			Valid,
+			Invalid
+		}
+
+        public enum ConversionStatus
+        {
+            Approved,
+            Pending,
+            Provisionally
+        }
+    }
 }
