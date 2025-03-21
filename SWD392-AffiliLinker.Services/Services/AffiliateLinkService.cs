@@ -15,7 +15,7 @@ using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 
 namespace SWD392_AffiliLinker.Services.Services
 {
-	public class AffiliateLinkService : IAffiliateLinkService
+	public class AffiliateLinkService : IAffiliateLinkService			
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICurrentUserService _currentUserService;
