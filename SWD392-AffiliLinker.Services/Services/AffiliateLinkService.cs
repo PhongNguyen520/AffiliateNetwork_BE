@@ -16,12 +16,13 @@ using static SWD392_AffiliLinker.Core.Store.EnumStatus;
 
 namespace SWD392_AffiliLinker.Services.Services
 {
-    public class AffiliateLinkService : IAffiliateLinkService
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IOptions<AffiliateDomainOptions> _options;
-        private readonly IMapper _mapper;
+	public class AffiliateLinkService : IAffiliateLinkService			
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICurrentUserService _currentUserService;
+		private readonly IOptions<AffiliateDomainOptions> _options;
+		private readonly IMapper _mapper;
+
 
         public AffiliateLinkService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IOptions<AffiliateDomainOptions> options)
         {
