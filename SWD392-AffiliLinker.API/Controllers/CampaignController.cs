@@ -85,6 +85,11 @@ namespace SWD392_AffiliLinker.API.Controllers
 					return BadRequest("Website link is required");
 				}
 
+				if (request.ConversionRate == null)
+				{
+					return BadRequest("ConversionRate is required");
+				}
+
 				var response = await _campaignService.CreateCampaignAsync(request);
 
 				if (response.Data == null)
@@ -217,6 +222,24 @@ namespace SWD392_AffiliLinker.API.Controllers
 				}
 
 				return Ok(response);
+			}
+			catch (System.Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
+
+		[HttpGet("advertiser_list")]
+		public async Task<ActionResult<BaseResponse<BasePaginatedList<CampaignFilterResponse>>>> AdvertisersCampaigns(
+	[FromQuery] string? name,
+	[FromQuery] string? status,
+	[FromQuery] int pageIndex,
+	[FromQuery] int pageSize)
+		{
+			try
+			{
+				var response = await _campaignService.GetAdvertisorCampaignsAsync(name, status, pageIndex, pageSize);
+				return Ok(BaseResponse<BasePaginatedList<CampaignFilterResponse>>.OkResponse(response, "Sucessful"));
 			}
 			catch (System.Exception ex)
 			{

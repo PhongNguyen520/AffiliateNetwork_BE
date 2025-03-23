@@ -19,6 +19,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
 		Task<BaseResponse<IEnumerable<CampaignListResponse>>> GetAllCampaignIdsAndNamesAsync();
 		Task<BaseResponse<bool>> UpdateCampaignStatusAsync(string id, CampaignStatus status);
 		Task<BasePaginatedList<CampaignResponse>> GetWaitCampaignList(int? index, int? size);
+		Task<BasePaginatedList<CampaignFilterResponse>> GetAdvertisorCampaignsAsync(string? name, string? status, int? index, int? size);
 	}
 
 }

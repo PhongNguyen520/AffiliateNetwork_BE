@@ -16,6 +16,7 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request
 		public string? WebsiteLink { get; set; }
 		public string? TargetCustomer { get; set; }
 		public string? Zone { get; set; }
+		public decimal ConversionRate { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public string? CategoryId { get; set; }

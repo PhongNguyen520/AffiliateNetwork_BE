@@ -24,5 +24,6 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
 		public DateTime EndDate { get; set; }
 		public List<string> PayoutModelName { get; set; }
 		public string Status { get; set; }
+		public bool? IsJoin { get; set; }
 	}
 }
