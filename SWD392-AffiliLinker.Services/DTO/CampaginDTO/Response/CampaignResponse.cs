@@ -24,7 +24,7 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
         public DateTime EndDate { get; set; }
         public string Status { get; set; }
         public Guid UserId { get; set; }
-    }
+	}
 
     public class CampaignListResponse
     {

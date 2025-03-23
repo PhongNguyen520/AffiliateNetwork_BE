@@ -53,6 +53,8 @@ namespace SWD392_AffiliLinker.Services.Services
 					Status = MemberStatus.Active.ToString()
 				};
 				await _unitOfWork.GetRepository<CampaignMember>().InsertAsync(result);
+				campaign.EnrollCount++;
+				await _unitOfWork.GetRepository<Campaign>().UpdateAsync(campaign);
 				await _unitOfWork.SaveAsync();
 				_unitOfWork.CommitTransaction();
 			}

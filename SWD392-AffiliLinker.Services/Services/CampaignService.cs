@@ -97,11 +97,22 @@ namespace SWD392_AffiliLinker.Services
 						.Include(c => c.CampaignPayoutModels)
 						.ThenInclude(cpm => cpm.PayoutModel)
 						.FirstOrDefaultAsync(s => s.Id == id);
+				var userId = _currentUserService.GetUserId();
+				var campaignMember = await _unitOfWork.GetRepository<CampaignMember>().Entities.FirstOrDefaultAsync(c => c.CampaignId == id && c.UserId == Guid.Parse(userId));
 
 				if (campaign == null)
 					return BaseResponse<CampaignDetailResponse>.FailResponse("Campaign not found");
 
 				var response = _mapper.Map<CampaignDetailResponse>(campaign);
+
+				if (campaignMember != null)
+				{
+					response.IsJoin = true;
+				}
+				else
+				{
+					response.IsJoin = false;
+				}
 				return BaseResponse<CampaignDetailResponse>.OkResponse(response, "Campaign retrieved successfully");
 			}
 			catch (Exception ex)
@@ -235,6 +246,33 @@ namespace SWD392_AffiliLinker.Services
 				BasePaginatedList<Campaign> result = await _unitOfWork.GetRepository<Campaign>().GetPagging(query, index, size);
 				List<CampaignResponse> campaigns = _mapper.Map<List<CampaignResponse>>(result.Items);
 				return new BasePaginatedList<CampaignResponse>(campaigns, result.TotalItems, result.CurrentPage, result.PageSize);
+			}
+			catch (Exception ex)
+			{
+				throw;
+			}
+		}
+
+		public async Task<BasePaginatedList<CampaignFilterResponse>> GetAdvertisorCampaignsAsync(string? name, string? status, int? index, int? size)
+		{
+			try
+			{
+				var userId = _currentUserService.GetUserId();
+				IQueryable<Campaign> query = _unitOfWork.GetRepository<Campaign>().Entities.Where(s => s.UserId == Guid.Parse(userId));
+
+				if (!string.IsNullOrEmpty(name))
+				{
+					query = query.Where(c => c.CampaignName.Contains(name));
+				}
+
+				if (!string.IsNullOrEmpty(status))
+				{
+					query = query.Where(c => c.Status == status);
+				}
+
+				BasePaginatedList<Campaign> result = await _unitOfWork.GetRepository<Campaign>().GetPagging(query, index, size);
+				List<CampaignFilterResponse> campaigns = _mapper.Map<List<CampaignFilterResponse>>(result.Items);
+				return new BasePaginatedList<CampaignFilterResponse>(campaigns, result.TotalItems, result.CurrentPage, result.PageSize);
 			}
 			catch (Exception ex)
 			{
