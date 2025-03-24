@@ -7,59 +7,69 @@ using System.Text.Json.Serialization;
 
 namespace SWD392_AffiliLinker.API
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
 			builder.Services.AddConfig(builder.Configuration);
-            builder.Services.AddRepositoryConfig().AddServiceConfig(builder.Configuration); ;
-            builder.Configuration
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+			builder.Services.AddRepositoryConfig().AddServiceConfig(builder.Configuration); ;
+			builder.Configuration
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables();
+			builder.Services.AddControllers();
+			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+			builder.Services.AddEndpointsApiExplorer();
+			builder.Services.AddSwaggerGen();
 
-            builder.Services.AddControllers()
-                            .AddJsonOptions(options =>
-                            {
-                                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                            });
+			builder.Services.AddControllers()
+							.AddJsonOptions(options =>
+							{
+								options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+							});
 
+			builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddHttpContextAccessor();
+			var app = builder.Build();
 
-            var app = builder.Build();
+			using (var scope = app.Services.CreateScope())
+			{
+				var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+				dbContext.Database.Migrate();
+			}
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-                dbContext.Database.Migrate();
-            }
+			// If in Docker, disable HTTPS redirection
+			if (!IsDockerEnvironment())
+			{
+				app.UseHttpsRedirection();
+			}
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+			if (app.Environment.IsDevelopment())
+			{
+				app.UseSwagger();
+				app.UseSwaggerUI();
+			}
 
-            app.UseCors("AllowSpecificOrigins");
+			app.UseCors("AllowSpecificOrigins");
 
-            app.UseHttpsRedirection();
+			app.UseAuthentication();
 
-            app.UseAuthentication();
+			app.UseAuthorization();
 
-            app.UseAuthorization();
+			app.MapControllers();
 
-            app.MapControllers();
+			app.Run();
+		}
 
-            app.Run();
-        }
-    }
+		// Function to detect if the app is running in Docker
+		private static bool IsDockerEnvironment()
+		{
+			var isDocker = File.Exists("/.dockerenv"); // Docker creates this file when running inside a container
+			return isDocker;
+		}
+	}
 }

@@ -1,12 +1,63 @@
-version: '3.4'
+# version: '3.4'
+
+# services:
+#   swd392-affililinker.api:
+#     image: ${DOCKER_REGISTRY-}swd392affililinkerapi
+#     build:
+#       context: .
+#       dockerfile: SWD392-AffiliLinker.API/Dockerfile
+#     environment:
+#       - ConnectionStrings__MyDB=Server=Server=(local);Database=AffiLinkerDB;UID=sa;PWD=12345;TrustServerCertificate=True
+#     ports:
+#       - "8082:80"
+
 
 services:
-  swd392-affililinker.api:
-    image: ${DOCKER_REGISTRY-}swd392affililinkerapi
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server_container
+    environment:
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - affili_network
+    command: 
+      - /bin/bash
+      - -c
+      - |
+        /opt/mssql/bin/sqlservr &
+        sleep 30
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'AffiLinkerDB') CREATE DATABASE AffiLinkerDB"
+        sleep infinity
+
+  webapi_test:
     build:
       context: .
       dockerfile: SWD392-AffiliLinker.API/Dockerfile
+    container_name: webapi_container
+    image: swd392affililinkerapi  
     environment:
-      - ConnectionStrings__MyDB=Server=host.docker.internal;Database=AffiLinkerDB;UID=sa;PWD=12345;TrustServerCertificate=True
+      - ConnectionStrings__MyDB=Server=db,1433;Database=AffiLinkerDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true;Encrypt=false
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
     ports:
       - "8082:80"
+    depends_on:
+      - db
+    networks:
+      - affili_network
+    restart: on-failure
+
+networks:
+  affili_network:
+    driver: bridge
+
+volumes:
+  sql_data:
+
+

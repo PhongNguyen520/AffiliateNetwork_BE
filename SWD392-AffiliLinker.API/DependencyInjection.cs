@@ -29,9 +29,15 @@ namespace SWD392_AffiliLinker.API
 
 		public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
 		{
-			services.AddDbContext<DatabaseContext>(options =>
+			services.AddDbContext<DatabaseContext>((provider, options) =>
 			{
-				options.UseSqlServer(configuration.GetConnectionString("MyDB"));
+				var configuration = provider.GetRequiredService<IConfiguration>();
+				options.UseSqlServer(
+					configuration.GetConnectionString("MyDB"),
+					sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
+						maxRetryCount: 5,
+						maxRetryDelay: TimeSpan.FromSeconds(30),
+						errorNumbersToAdd: null));
 			});
 		}
 
