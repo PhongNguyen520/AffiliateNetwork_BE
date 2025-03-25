@@ -17,6 +17,7 @@ namespace SWD392_AffiliLinker.Repositories.Entities
 		public string? TargetCustomer { get; set; }
 		public string? Zone { get; set; }
 		public string Status { get; set; }
+		public decimal Budget { get; set; }
 
 		public Guid UserId { get; set; }
 		public virtual User User { get; set; }

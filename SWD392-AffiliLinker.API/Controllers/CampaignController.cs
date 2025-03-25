@@ -65,7 +65,7 @@ namespace SWD392_AffiliLinker.API.Controllers
 
 		[HttpPost("create")]
 		[Authorize(Roles = "Advertiser")]
-		public async Task<IActionResult> CreateCampaign([FromBody] CreateCampaignRequest request)
+		public async Task<IActionResult> CreateCampaign(CreateCampaignRequest request)
 		{
 			try
 			{
