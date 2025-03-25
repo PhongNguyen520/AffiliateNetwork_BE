@@ -44,7 +44,6 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<CreateCampaignRequest, Campaign>()
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
 				.ForMember(dest => dest.EnrollCount, opt => opt.Ignore())
-				.ForMember(dest => dest.ConversionRate, opt => opt.Ignore())
 				.ForMember(dest => dest.Status, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.CampaignPayoutModels, opt => opt.Ignore())

@@ -124,5 +124,10 @@ namespace SWD392_AffiliLinker.Repositories.Repositories
         {
             return await _context.Set<T>().FirstOrDefaultAsync(param);
         }
+
+        public async Task<T?> FindByAndInclude(Expression<Func<T, bool>> param, Expression<Func<T, object>> include)
+        {
+            return await _context.Set<T>().Include(include).FirstOrDefaultAsync(param);
+        }
     }
 }

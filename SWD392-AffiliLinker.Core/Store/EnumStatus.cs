@@ -56,5 +56,6 @@ namespace SWD392_AffiliLinker.Core.Store
             Pending,
             Provisionally
         }
+
     }
 }

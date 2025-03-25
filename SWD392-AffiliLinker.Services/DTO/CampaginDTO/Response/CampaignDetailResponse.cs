@@ -20,6 +20,7 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
 		public string? TargetCustomer { get; set; }
 		public string? Zone { get; set; }
 		public string? CategoryName { get; set; }
+		public decimal Budget {  get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public List<string> PayoutModelName { get; set; }
