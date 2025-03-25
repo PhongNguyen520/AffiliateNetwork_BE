@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using SWD392_AffiliLinker.Core.Base;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
 using SWD392_AffiliLinker.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,7 +13,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWD392_AffiliLinker.API.Controllers
 {
-    [Route("export-traffic")]
+    [Route("api/export-traffic")]
     [ApiController]
     public class ExportTrafficController : ControllerBase
     {
@@ -23,11 +25,11 @@ namespace SWD392_AffiliLinker.API.Controllers
         }
 
         [HttpGet("export-excel/clickinfo")]
-        public async Task<IActionResult> ExportClickInfoExcel(string AffiLinkId)
+        public async Task<IActionResult> ExportClickInfoExcel([FromQuery]FillterExportClickInfo request)
         {
             try
             {
-                var fileBytes = await _exportTraffic.ExportClickInfoExcel(AffiLinkId);
+                var fileBytes = await _exportTraffic.ExportClickInfoExcel(request);
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ClickInFo.xlsx");
             }
             catch (BaseException.ErrorException ex)
@@ -51,11 +53,11 @@ namespace SWD392_AffiliLinker.API.Controllers
         }
 
         [HttpGet("export-excel/conversion")]
-        public async Task<IActionResult> ExportConversionExcel(string AffiLinkId)
+        public async Task<IActionResult> ExportConversionExcel([FromQuery]FillterExportConversion request)
         {
             try
             {
-                var fileBytes = await _exportTraffic.ExportConversionExcel(AffiLinkId);
+                var fileBytes = await _exportTraffic.ExportConversionExcel(request);
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Conversion.xlsx");
             }
             catch (BaseException.ErrorException ex)

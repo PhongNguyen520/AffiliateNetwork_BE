@@ -54,7 +54,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 if (httpContext == null)
                     throw new BaseException.ErrorException(Core.Store.StatusCodes.NotFound, Core.Store.StatusCodes.NotFound.Name(), "HttpContext existed!");
 
-                var key = value;
+                var key = ".Affiliate.Tracking.Application";
 
                 var options = new CookieOptions
                 {

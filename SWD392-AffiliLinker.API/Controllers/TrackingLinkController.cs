@@ -33,7 +33,7 @@ namespace SWD392_AffiliLinker.API.Controllers
             try
             {
                 var affiLink = await _affiliateLinkService.RedirectOptimizeUrl(slug);
-                var cookieValue = _cookieService.GetCookie(affiLink.Id);
+                var cookieValue = _cookieService.GetCookie(".Affiliate.Tracking.Application");
                 InfoClientResponse infoClientResponse = await _currentUserService.GetClientInfo();
 
                 ClickInfoRequest clickInfoRequest = new()
@@ -44,7 +44,7 @@ namespace SWD392_AffiliLinker.API.Controllers
                     AffiliateLinkId = affiLink.Id,
                 };
 
-                if (cookieValue == null)
+                if (cookieValue != affiLink.Id)
                 {
                     _cookieService.SetCookie(affiLink.Id);
                     clickInfoRequest.Status = ClickInfoStatus.Valid.Name();

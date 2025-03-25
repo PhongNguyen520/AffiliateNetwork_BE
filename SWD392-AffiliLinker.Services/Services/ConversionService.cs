@@ -40,8 +40,11 @@ namespace SWD392_AffiliLinker.Services.Services
 				var converRate = _unitOfWork.GetRepository<Campaign>()
 												   .GetById(affiliateLink.CampaignId)
 												   .ConversionRate;
+                var user = await _unitOfWork.GetRepository<User>()
+                        .FindByAndInclude(_ => _.Id == affiliateLink.UserId,
+                            _ => _.Publisher);
 
-				var commission = request.Subtotal * converRate;
+                var commission = request.Subtotal * converRate;
 
 				var converDb = _mapper.Map<Conversion>(request);
 				converDb.CreatedTime = DateTime.Now;
@@ -54,7 +57,8 @@ namespace SWD392_AffiliLinker.Services.Services
 				await _unitOfWork.GetRepository<Conversion>().InsertAsync(converDb);
 
 				var commissionEntity = await _unitOfWork.GetRepository<Commission>()
-														.FirstOrDefaultAsync(_ => _.CreatedTime.Date == DateTime.Now.Date);
+														.FirstOrDefaultAsync(_ => _.CreatedTime.Date == DateTime.Now.Date
+																			  && _.PublisherId == user.Publisher.Id);
 				if (commissionEntity != null)
 				{
 					commissionEntity.TotalCommission += commission.Value;
@@ -66,9 +70,7 @@ namespace SWD392_AffiliLinker.Services.Services
 					commissionEntity = new Commission();
 
 					commissionEntity.TotalCommission = commission.Value;
-					var user = await _unitOfWork.GetRepository<User>()
-						.FindByAndInclude(_ => _.Id == affiliateLink.UserId,
-							_ => _.Publisher);
+					
 					commissionEntity.PublisherId = user.Publisher.Id;
 					commissionEntity.CreatedTime = DateTime.Now;
 					commissionEntity.LastUpdatedTime = DateTime.Now;
