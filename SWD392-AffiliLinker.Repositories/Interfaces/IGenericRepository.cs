@@ -1,4 +1,5 @@
 ﻿using SWD392_AffiliLinker.Core.Base;
+using SWD392_AffiliLinker.Repositories.Entities;
 using System.Linq.Expressions;
 
 namespace SWD392_AffiliLinker.Repositories.Interfaces
@@ -31,7 +32,8 @@ namespace SWD392_AffiliLinker.Repositories.Interfaces
         Task<int> CountAsync();
         Task<IList<T>> SearchAsync(Expression<Func<T, bool>> filter);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> param);
+        Task<T?> FindByAndInclude(Expression<Func<T, bool>> param, Expression<Func<T, object>> include);
 
 
-    }
+	}
 }

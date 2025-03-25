@@ -44,6 +44,7 @@ namespace SWD392_AffiliLinker.Services
 				campaign.LastUpdatedTime = DateTime.Now;
 				campaign.Status = CampaignStatus.Wait.ToString();
 				campaign.Budget = 0;
+				campaign.ConversionRate = campaignRequest.ConversionRate;
 				campaign.Image = url;
 
 				if (string.IsNullOrEmpty(campaignRequest.CategoryId))

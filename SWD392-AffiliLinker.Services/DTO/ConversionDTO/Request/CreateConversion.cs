@@ -14,7 +14,6 @@ namespace SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request
         public string? ProductId { get; set; }
         public int Quantity { get; set; }
         public decimal? Subtotal { get; set; }
-        public decimal Commission { get; set; }
         public string AffiliateLinkId { get; set; }
     }
 }
