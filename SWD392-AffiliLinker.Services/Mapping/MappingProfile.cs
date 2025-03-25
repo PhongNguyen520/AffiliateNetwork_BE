@@ -11,6 +11,7 @@ using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CategoryDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.ClickDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.CommissionDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Response;
 using SWD392_AffiliLinker.Services.DTO.PayoutModelDTO.Request;
@@ -44,7 +45,6 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<CreateCampaignRequest, Campaign>()
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
 				.ForMember(dest => dest.EnrollCount, opt => opt.Ignore())
-				.ForMember(dest => dest.ConversionRate, opt => opt.Ignore())
 				.ForMember(dest => dest.Status, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.CampaignPayoutModels, opt => opt.Ignore())
@@ -76,6 +76,7 @@ namespace SWD392_AffiliLinker.Services.Mapping
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
                 .ReverseMap();
             CreateMap<BasePaginatedList<User>, BasePaginatedList<AccountResponse>>().ReverseMap();
+			CreateMap<Commission, CommissionResponse>().ReverseMap();
         }
 	}
 }

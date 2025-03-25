@@ -7,6 +7,8 @@ using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Request;
 using SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response;
 using AutoMapper;
 using static SWD392_AffiliLinker.Core.Store.EnumStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SWD392_AffiliLinker.Services
 {
@@ -15,26 +17,36 @@ namespace SWD392_AffiliLinker.Services
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IMapper _mapper;
+        private readonly IHepperUploadImage _hepperUploadImage;
 
-		public CampaignService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
+        public CampaignService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IHepperUploadImage hepperUploadImage)
 		{
 			_unitOfWork = unitOfWork;
 			_currentUserService = currentUserService;
 			_mapper = mapper;
+			_hepperUploadImage = hepperUploadImage;
 		}
 
-		public async Task<BaseResponse<CampaignResponse>> CreateCampaignAsync(CreateCampaignRequest campaignRequest)
+		public async Task<BaseResponse<CampaignResponse>> CreateCampaignAsync([FromBody]CreateCampaignRequest campaignRequest)
 		{
 			_unitOfWork.BeginTransaction();
 			try
 			{
-				var userId = _currentUserService.GetUserId();
+
+                using var stream = campaignRequest.Image.OpenReadStream();
+                var url = await _hepperUploadImage.UploadImageAsync(stream, campaignRequest.Image.FileName);
+
+                var userId = _currentUserService.GetUserId();
 				var campaign = _mapper.Map<Campaign>(campaignRequest);
 				campaign.UserId = Guid.Parse(userId);
 				campaign.EnrollCount = 0;
 				campaign.CreatedTime = DateTime.Now;
 				campaign.LastUpdatedTime = DateTime.Now;
 				campaign.Status = CampaignStatus.Wait.ToString();
+				campaign.Budget = 0;
+				campaign.ConversionRate = campaignRequest.ConversionRate;
+				campaign.Image = url;
+
 				if (string.IsNullOrEmpty(campaignRequest.CategoryId))
 				{
 					campaign.CategoryId = null;
@@ -130,7 +142,8 @@ namespace SWD392_AffiliLinker.Services
 				if (campaign == null)
 					return BaseResponse<bool>.FailResponse("Campaign not found");
 
-				campaign = _mapper.Map<Campaign>(updatedCampaign);
+				_mapper.Map(updatedCampaign, campaign);
+
 				campaign.UserId = Guid.Parse(userId);
 
 				_unitOfWork.GetRepository<Campaign>().Update(campaign);

@@ -56,6 +56,7 @@ namespace SWD392_AffiliLinker.Services
 			services.AddScoped<IConversionService, ConversionService>();
 			services.AddScoped<IHepperUploadImage, HepperUploadImage>();
 			services.AddScoped<IAccountService, AccountService>();
+			services.AddScoped<ICommissionService, CommissionService>();
 
 		}
 

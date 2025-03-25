@@ -18,6 +18,8 @@ using SWD392_AffiliLinker.Core.Base;
 using SWD392_AffiliLinker.Core.Store;
 using SWD392_AffiliLinker.Core.Utils;
 using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Response;
+using SWD392_AffiliLinker.Services.DTO.ClickDTO.Request;
+using SWD392_AffiliLinker.Services.DTO.ConversionDTO.Request;
 
 namespace SWD392_AffiliLinker.Services.Services
 {
@@ -32,19 +34,28 @@ namespace SWD392_AffiliLinker.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<byte[]> ExportClickInfoExcel(string AffiLinkId)
+        public async Task<byte[]> ExportClickInfoExcel(FillterExportClickInfo request)
         {
             try
             {
                 var listClickInfo = _unitOfWork.GetRepository<ClickInfo>()
                                                      .Entities
                                                      .AsNoTracking()
-                                                     .Where(_ => _.AffiliateLinkId == AffiLinkId)
-                                                     .ToList();
-
-                if (listClickInfo.Count == 0)
+                                                     .Where(_ => _.AffiliateLinkId == request.AffiliateId);
+                if (request.BeginDate.HasValue)
                 {
-                    throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), $"No ClickInfo Data of {AffiLinkId}");
+                    listClickInfo = listClickInfo.Where(_ => _.CreatedTime.Date >= request.BeginDate.Value.Date);
+                }
+                if (request.EndDate.HasValue)
+                {
+                    listClickInfo = listClickInfo.Where(_ => _.CreatedTime.Date <= request.EndDate.Value.Date);
+                }
+
+                var newList = listClickInfo.ToList();
+
+                if (newList.Count == 0)
+                {
+                    throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), $"No ClickInfo Data of {request.AffiliateId}");
                 }
 
                 var listExcel = _mapper.Map<List<ExcelClickInfoResponse>>(listClickInfo);
@@ -52,7 +63,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
                 using (var package = new ExcelPackage())
                 {
-                    var worksheet = package.Workbook.Worksheets.Add($"Click_Information_Of_{AffiLinkId}");
+                    var worksheet = package.Workbook.Worksheets.Add($"Click_Information_Of_{request.AffiliateId}");
                     var properties = typeof(ExcelClickInfoResponse).GetProperties();
 
                     int row = 1;
@@ -81,19 +92,29 @@ namespace SWD392_AffiliLinker.Services.Services
             }
         }
 
-        public async Task<byte[]> ExportConversionExcel(string AffiLinkId)
+        public async Task<byte[]> ExportConversionExcel(FillterExportConversion request)
         {
             try
             {
                 var listConversionDb = _unitOfWork.GetRepository<Conversion>()
                                                      .Entities
                                                      .AsNoTracking()
-                                                     .Where(_ => _.AffiliateLinkId == AffiLinkId)
-                                                     .ToList();
+                                                     .Where(_ => _.AffiliateLinkId == request.AffiliateId);
 
-                if (listConversionDb.Count == 0)
+                if (request.BeginDate.HasValue)
                 {
-                    throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), $"No Conversion Data of {AffiLinkId}");
+                    listConversionDb = listConversionDb.Where(_ => _.CreatedTime.Date >= request.BeginDate.Value.Date);
+                }
+                if (request.EndDate.HasValue)
+                {
+                    listConversionDb = listConversionDb.Where(_ => _.CreatedTime.Date <= request.EndDate.Value.Date);
+                }
+
+                var newList = listConversionDb.ToList();
+
+                if (newList.Count == 0)
+                {
+                    throw new BaseException.ErrorException(StatusCodes.BadRequest, StatusCodes.BadRequest.Name(), $"No Conversion Data of {request.AffiliateId}");
                 }
 
                 var listExcel = _mapper.Map<List<ConversionResponse>>(listConversionDb);
@@ -101,7 +122,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
                 using (var package = new ExcelPackage())
                 {
-                    var worksheet = package.Workbook.Worksheets.Add($"Conversion_Information_Of_{AffiLinkId}");
+                    var worksheet = package.Workbook.Worksheets.Add($"Conversion_Information_Of_{request.AffiliateId}");
                     var properties = typeof(ConversionResponse).GetProperties();
 
                     int row = 1;

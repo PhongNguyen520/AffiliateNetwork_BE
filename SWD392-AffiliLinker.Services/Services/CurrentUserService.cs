@@ -63,7 +63,7 @@ namespace SWD392_AffiliLinker.Services.Services
         {
             try
             {
-                return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new();
             }
             catch
             {
