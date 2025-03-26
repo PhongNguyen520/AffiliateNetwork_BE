@@ -8,7 +8,7 @@ using SWD392_AffiliLinker.Services.Services;
 
 namespace SWD392_AffiliLinker.API.Controllers
 {
-    [Route("conversion")]
+    [Route("api/conversion")]
     [ApiController]
     public class ConversionController : ControllerBase
     {

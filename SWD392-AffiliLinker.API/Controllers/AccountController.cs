@@ -9,7 +9,7 @@ using SWD392_AffiliLinker.Services.Interfaces;
 
 namespace SWD392_AffiliLinker.API.Controllers
 {
-    [Route("account")]
+    [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {

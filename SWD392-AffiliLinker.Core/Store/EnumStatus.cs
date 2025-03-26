@@ -54,7 +54,8 @@ namespace SWD392_AffiliLinker.Core.Store
         {
             Approved,
             Pending,
-            Provisionally
+            Provisionally,
+			Rejected
         }
 
     }
