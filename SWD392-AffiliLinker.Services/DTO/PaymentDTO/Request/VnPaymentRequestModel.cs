@@ -18,4 +18,9 @@ namespace SWD392_AffiliLinker.Services.DTO.PaymentDTO.Request
         public string UserId { get; set; }
         public DateTime CreatedDate { get; set; }
     }
+
+    public class PayCampaignRequestModel
+    {
+        public string CampaignId { get; set; }
+    }
 }

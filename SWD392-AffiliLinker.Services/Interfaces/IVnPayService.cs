@@ -12,6 +12,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
     public interface IVnPayService
     {
         string CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
+
         VNPaymentResponseModel PaymentExecute(IQueryCollection collections);
 
         Task SaveTransactionAsync(VNPaymentResponseModel response);
