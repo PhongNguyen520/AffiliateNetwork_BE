@@ -21,4 +21,5 @@ namespace SWD392_AffiliLinker.Services.DTO.PaymentDTO.Response
 
 
     }
+
 }
