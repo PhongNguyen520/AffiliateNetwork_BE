@@ -80,27 +80,26 @@ namespace SWD392_AffiliLinker.API.Controllers
             try
             {
                 var affiLink = await _affiliateLinkService.RedirectShortenUrl(shortenCode);
-                var cookieValue = _cookieService.GetCookie(affiLink.Id);
-
+                var cookieValue = _cookieService.GetCookie(".Affiliate.Tracking.Application");
                 InfoClientResponse infoClientResponse = await _currentUserService.GetClientInfo();
 
                 ClickInfoRequest clickInfoRequest = new()
                 {
                     IPAddress = infoClientResponse.IpAddress,
                     UserAgent = infoClientResponse.UserAgent,
-                    Status = ClickInfoStatus.Invalid.ToString(),
+                    Status = ClickInfoStatus.Invalid.Name(),
                     AffiliateLinkId = affiLink.Id,
                 };
 
-                if (cookieValue == null)
+                if (cookieValue != affiLink.Id)
                 {
                     _cookieService.SetCookie(affiLink.Id);
-                    clickInfoRequest.Status = ClickInfoStatus.Valid.ToString();
+                    clickInfoRequest.Status = ClickInfoStatus.Valid.Name();
                 }
 
                 await _clickService.CreateClickInfo(clickInfoRequest);
 
-                return Redirect(affiLink.Url);
+                return Redirect($"{affiLink.Url}?affiliateId={affiLink.Id}");
             }
             catch (BaseException.ErrorException ex)
             {
