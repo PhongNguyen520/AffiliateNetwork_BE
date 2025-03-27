@@ -15,5 +15,6 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
 		public decimal ConversionRate { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
+		public string Status { get; set; }
 	}
 }
