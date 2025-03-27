@@ -165,6 +165,7 @@ namespace SWD392_AffiliLinker.Services.Services
             }
         }
 
+
         public async Task<IEnumerable<TransactionResponseModel>> GetTransactionsAsync(string userId)
         {
             try
@@ -195,10 +196,5 @@ namespace SWD392_AffiliLinker.Services.Services
                 return new List<TransactionResponseModel>();
             }
         }
-
-
-
-
-
     }
 }
