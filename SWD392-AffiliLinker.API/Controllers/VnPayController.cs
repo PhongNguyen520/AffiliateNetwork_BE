@@ -137,6 +137,26 @@ namespace SWD392_AffiliLinker.API.Controllers
         }
 
 
+        [HttpGet("transactions")]
+        [Authorize]
+        public async Task<IActionResult> GetTransactions()
+        {
+            try
+            {
+                var userId = _currentUserService.GetUserId();
+                var transactions = await _vpnPayService.GetTransactionsAsync(userId);
+
+                return Ok(new
+                {
+                    message = "Transactions retrieved successfully",
+                    transactions = transactions
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error retrieving transactions: {ex.Message}" });
+            }
+        }
 
 
     }
