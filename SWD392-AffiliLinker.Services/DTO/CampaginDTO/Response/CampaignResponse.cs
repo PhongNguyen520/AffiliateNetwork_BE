@@ -17,6 +17,7 @@ namespace SWD392_AffiliLinker.Services.DTO.CampaginDTO.Response
         public string? WebsiteLink { get; set; }
         public int EnrollCount { get; set; }
         public decimal ConversionRate { get; set; }
+        public decimal Budget {  get; set; }
         public string? TargetCustomer { get; set; }
         public string? Zone { get; set; }
         public string? CategoryId { get; set; }
