@@ -126,23 +126,30 @@ namespace SWD392_AffiliLinker.API.Controllers
             await _vpnPayService.SaveTransactionAsync(response);
 
 			redirectUrl = $"{_config["VnPay:ReturnSuccess"]}?status=success&transactionId={response.TransactionId}&amount={response.Amount}";
-
-			//return Ok(new
-			//         {
-			//             message = "Thanh toán thành công!",
-			//             transaction = new
-			//             {
-			//                 PaymentMethod = response.PaymentMethod,
-			//                 OrderDescription = response.OrderDescription,
-			//                 CampaignId = response.Id,
-			//                 TransactionId = response.TransactionId,
-			//                 Amount = response.Amount,
-			//                 Status = response.Success ? "Success" : "Failed",
-			//                 CreatedDate = DateTime.UtcNow.AddHours(7)
-			//             }
-			//         });
 			return Redirect(redirectUrl);
 		}
-       
+
+
+        [HttpGet("transactions")]
+        [Authorize]
+        public async Task<IActionResult> GetTransactions()
+        {
+            try
+            {
+                var userId = _currentUserService.GetUserId();
+                var transactions = await _vpnPayService.GetTransactionsAsync(userId);
+
+                return Ok(new
+                {
+                    message = "Transactions retrieved successfully",
+                    transactions = transactions
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error retrieving transactions: {ex.Message}" });
+            }
+        }
+
     }
 }

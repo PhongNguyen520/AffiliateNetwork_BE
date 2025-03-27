@@ -43,7 +43,6 @@ namespace SWD392_AffiliLinker.Services
 				campaign.CreatedTime = DateTime.Now;
 				campaign.LastUpdatedTime = DateTime.Now;
 				campaign.Status = CampaignStatus.Wait.ToString();
-				campaign.Budget = 0;
 				campaign.ConversionRate = campaignRequest.ConversionRate;
 				campaign.Image = url;
 
