@@ -36,6 +36,10 @@ namespace SWD392_AffiliLinker.Services.Services
 			{
 				var affiliateLink = _unitOfWork.GetRepository<AffiliateLink>()
 												   .GetById(request.AffiliateLinkId);
+				if (affiliateLink is null)
+				{
+                    throw new BaseException.ErrorException(StatusCodes.NotFound, StatusCodes.NotFound.Name(), "AffiliateLink not exist!!!");
+                }
 
 				var converRate = _unitOfWork.GetRepository<Campaign>()
 												   .GetById(affiliateLink.CampaignId)
