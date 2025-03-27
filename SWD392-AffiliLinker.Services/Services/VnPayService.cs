@@ -40,7 +40,7 @@ namespace SWD392_AffiliLinker.Services.Services
             var tick = DateTime.Now.Ticks.ToString();
             var vnpay = new VnPayLibrary();
 
-            // Store payment information for later
+           
             _paymentTracker[tick] = (model.UserId, model.Amount, model.Id);
 
             vnpay.AddRequestData("vnp_Version", _config["VnPay:Version"]);
@@ -52,7 +52,7 @@ namespace SWD392_AffiliLinker.Services.Services
             vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _config["VnPay:Locale"]);
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán cho đơn hàng:" + model.Id);
-                
+
             vnpay.AddRequestData("vnp_OrderType", "other"); // default value: other
             var callback = _config["VnPay:PaymentBackReturnUrl"];
             vnpay.AddRequestData("vnp_ReturnUrl", callback);
@@ -74,14 +74,12 @@ namespace SWD392_AffiliLinker.Services.Services
                     vnpay.AddResponseData(key, value.ToString());
                 }
             }
+
             var responseTicket = vnpay.GetResponseData("vnp_TxnRef");
-            var (userId, amount, orderId) = _paymentTracker.GetValueOrDefault(responseTicket);
+            var (userId, amount, campaignId) = _paymentTracker.GetValueOrDefault(responseTicket);
             _paymentTracker.Remove(responseTicket);
 
-
             var vnp_orderId = Convert.ToInt64(responseTicket);
-
-
             var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
             var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
@@ -95,17 +93,13 @@ namespace SWD392_AffiliLinker.Services.Services
                     Success = false
                 };
             }
-            //int userId;
-            //if (!int.TryParse(vnpay.GetResponseData("vnp_UserId"), out userId))
-            //{
-            //	userId = 0; // Hoặc xử lý nếu không thể chuyển đổi
-            //}
+
             var response = new VNPaymentResponseModel
             {
                 Success = true,
                 PaymentMethod = "VnPay",
                 OrderDescription = vnp_OrderInfo,
-                Id = vnp_orderId.ToString(),
+                Id = campaignId, 
                 TransactionId = vnp_TransactionId.ToString(),
                 Token = vnp_SecureHash,
                 VnPayResponseCode = vnp_ResponseCode,
@@ -113,16 +107,16 @@ namespace SWD392_AffiliLinker.Services.Services
                 Amount = amount
             };
 
-            if (response.Success)
+            if (response.Success && vnp_ResponseCode == "00")
             {
                 try
                 {
                     var campaignRepo = _unitOfWork.GetRepository<Campaign>();
-                    var campaign = campaignRepo.Entities.FirstOrDefault(c => c.Id == orderId);
+                    var campaign = campaignRepo.Entities.FirstOrDefault(c => c.Id == campaignId);
 
                     if (campaign != null)
                     {
-                        campaign.Status = CampaignStatus.Active.ToString(); // Cập nhật trạng thái
+                        campaign.Status = CampaignStatus.Active.ToString(); // Cập nhật trạng thái thành Active
                         campaign.LastUpdatedTime = DateTime.UtcNow;
 
                         campaignRepo.Update(campaign);
@@ -142,18 +136,21 @@ namespace SWD392_AffiliLinker.Services.Services
             _unitOfWork.BeginTransaction();
             try
             {
+                // Fetch the campaign to get its name
+                var campaignRepo = _unitOfWork.GetRepository<Campaign>();
+                var campaign = campaignRepo.Entities.FirstOrDefault(c => c.Id == response.Id);
 
                 var transaction = new Transaction
                 {
-
                     Amount = response.Amount,
                     Transaction_Type = "VnPay Payment",
-                    Description = response.OrderDescription,
+                    Description = campaign != null
+                        ? $"Đã thanh toán thành công cho chiến dịch {campaign.CampaignName}"
+                        : response.OrderDescription,
                     Status = response.Success ? "Success" : "Failed",
                     UserId = Guid.Parse(response.UserId),
                     CreatedTime = DateTimeOffset.UtcNow,
                     LastUpdatedTime = DateTimeOffset.UtcNow
-
                 };
 
                 await _unitOfWork.GetRepository<Transaction>().InsertAsync(transaction);
@@ -165,10 +162,11 @@ namespace SWD392_AffiliLinker.Services.Services
                 _unitOfWork.RollBack();
                 await Console.Out.WriteLineAsync(ex.Message);
             }
-           
         }
 
-       
+
+
+
 
 
 

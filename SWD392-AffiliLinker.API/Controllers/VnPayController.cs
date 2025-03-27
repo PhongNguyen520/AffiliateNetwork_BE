@@ -1,23 +1,80 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SWD392_AffiliLinker.Services;
 using SWD392_AffiliLinker.Services.DTO.PaymentDTO.Request;
 using SWD392_AffiliLinker.Services.Interfaces;
 using SWD392_AffiliLinker.Services.Services;
 
 namespace SWD392_AffiliLinker.API.Controllers
 {
-    
+
     [Route("api/vnpay")]
     public class VnPayController : Controller
     {
         private readonly IVnPayService _vpnPayService;
         private readonly ICurrentUserService _currentUserService;
-        
-        public VnPayController(IVnPayService vnPayservice, ICurrentUserService currentUserService)
+        private readonly ICampaignService _campaignService;
+        public VnPayController(IVnPayService vnPayservice, ICurrentUserService currentUserService, ICampaignService campaignService)
         {
-           _currentUserService = currentUserService;
+            _currentUserService = currentUserService;
             _vpnPayService = vnPayservice;
+            _campaignService = campaignService;
         }
+
+        [HttpPost("pay-campaign")]
+        public async Task<IActionResult> PayForCampaign([FromBody] PayCampaignRequestModel requestModel)
+        {
+            try
+            {
+                // Lấy thông tin campaign
+                var campaignResponse = await _campaignService.GetCampaignByIdAsync(requestModel.CampaignId);
+
+                if (campaignResponse.Data == null)
+                {
+                    return NotFound($"Không tìm thấy chiến dịch với ID {requestModel.CampaignId}");
+                }
+
+                // Lấy thông tin user hiện tại
+                var userId = _currentUserService.GetUserId();
+
+                // Khởi tạo payload với các giá trị từ campaign
+                var payload = new VnPaymentRequestModel
+                {
+                    Id = campaignResponse.Data.Id,
+                    FullName = campaignResponse.Data.CampaignName,
+                    Description = $"Thanh toán cho chiến dịch {campaignResponse.Data.CampaignName}",
+                    Amount = campaignResponse.Data.Budget, // Use campaign budget for payment amount
+                    CreatedDate = DateTime.UtcNow.AddHours(7),
+                    UserId = userId,
+                    Transaction_Type = "Campaign Payment",
+                    Status = "Pending"
+                };
+
+                // Tạo URL thanh toán
+                var url = _vpnPayService.CreatePaymentUrl(HttpContext, payload);
+
+                // Trả về link thanh toán
+                return Ok(url);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Lỗi xử lý thanh toán: {ex.Message}" });
+            }
+        }
+
+
+        //[HttpGet("payment-success")]
+        //public IActionResult PaymentSuccess()
+        //{
+        //    return View(); // view để hiển thị thông báo thành công
+        //}
+
+        //[HttpGet("payment-failure")]
+        //public IActionResult PaymentFailure()
+        //{
+        //    return View(); // view để hiển thị thông báo thất bại
+        //}
+
         [HttpPost("vnpay")]
         //[Authorize]
         public IActionResult PaymentCalls([FromBody] VnPaymentRequestModel requestModel)
@@ -25,20 +82,20 @@ namespace SWD392_AffiliLinker.API.Controllers
 
 
             var userId = _currentUserService.GetUserId();
-            // Khởi tạo payload với các giá trị từ requestModel
+            
             var payload = new VnPaymentRequestModel
             {
                 //OrderId = currentOrderId, 
                 FullName = requestModel.FullName,
                 Description = requestModel.Description,
                 Amount = requestModel.Amount,
-                CreatedDate = DateTime.UtcNow.AddHours(7), // Đặt thời gian hiện tại (UTC+7)
-                UserId = userId  // Include UserId in payload
+                CreatedDate = DateTime.UtcNow.AddHours(7), 
+                UserId = userId  
 
             };
 
 
-            // Tạo URL thanh toán
+            //  URL thanh toán
             var url = _vpnPayService.CreatePaymentUrl(HttpContext, payload);
 
 
@@ -53,15 +110,15 @@ namespace SWD392_AffiliLinker.API.Controllers
         //[Authorize]
         public async Task<IActionResult> PaymentCallBack()
         {
-
             var response = _vpnPayService.PaymentExecute(Request.Query);
-
 
             if (response == null || response.VnPayResponseCode != "00")
             {
                 return StatusCode(500, new { message = $"Lỗi thanh toán VNPay: {response?.VnPayResponseCode ?? "unknown error"}" });
             }
-          await _vpnPayService.SaveTransactionAsync(response);
+
+            // Lưu transaction
+            await _vpnPayService.SaveTransactionAsync(response);
 
             return Ok(new
             {
@@ -70,17 +127,17 @@ namespace SWD392_AffiliLinker.API.Controllers
                 {
                     PaymentMethod = response.PaymentMethod,
                     OrderDescription = response.OrderDescription,
-                    Id = response.Id,
+                    CampaignId = response.Id,
                     TransactionId = response.TransactionId,
                     Amount = response.Amount,
                     Status = response.Success ? "Success" : "Failed",
                     CreatedDate = DateTime.UtcNow.AddHours(7)
                 }
             });
-
-
         }
-        
+
+
+
 
     }
 }
