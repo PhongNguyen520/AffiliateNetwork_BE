@@ -18,7 +18,7 @@ namespace SWD392_AffiliLinker.Services.Interfaces
         Task SaveTransactionAsync(VNPaymentResponseModel response);
 
 
-
+        Task<IEnumerable<TransactionResponseModel>> GetTransactionsAsync(string userId);
 
     }
 }

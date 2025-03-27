@@ -21,5 +21,15 @@ namespace SWD392_AffiliLinker.Services.DTO.PaymentDTO.Response
 
 
     }
+    public class TransactionResponseModel
+    {
+        public string Id { get; set; }
+        public decimal Amount { get; set; }
+        public string Transaction_Type { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public string UserId { get; set; }
+        public DateTimeOffset CreatedTime { get; set; }
+    }
 
 }

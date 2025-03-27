@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure;
 using static SWD392_AffiliLinker.Core.Store.EnumStatus;
+using Microsoft.EntityFrameworkCore;
 
 namespace SWD392_AffiliLinker.Services.Services
 {
@@ -164,7 +165,36 @@ namespace SWD392_AffiliLinker.Services.Services
             }
         }
 
+        public async Task<IEnumerable<TransactionResponseModel>> GetTransactionsAsync(string userId)
+        {
+            try
+            {
+                var transactionRepo = _unitOfWork.GetRepository<Transaction>();
 
+                var transactions = await transactionRepo.Entities
+                    .Where(t => t.UserId == Guid.Parse(userId))
+                    .OrderByDescending(t => t.CreatedTime)
+                    .Select(t => new TransactionResponseModel
+                    {
+                        Id = t.Id,
+                        Amount = t.Amount,
+                        Transaction_Type = t.Transaction_Type,
+                        Description = t.Description,
+                        Status = t.Status,
+                        UserId = t.UserId.ToString(),
+                        CreatedTime = t.CreatedTime
+                    })
+                    .ToListAsync();
+
+                return transactions;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Error retrieving transactions: {ex.Message}");
+                return new List<TransactionResponseModel>();
+            }
+        }
 
 
 
