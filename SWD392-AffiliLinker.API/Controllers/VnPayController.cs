@@ -14,11 +14,13 @@ namespace SWD392_AffiliLinker.API.Controllers
         private readonly IVnPayService _vpnPayService;
         private readonly ICurrentUserService _currentUserService;
         private readonly ICampaignService _campaignService;
-        public VnPayController(IVnPayService vnPayservice, ICurrentUserService currentUserService, ICampaignService campaignService)
+		private readonly IConfiguration _config;
+		public VnPayController(IVnPayService vnPayservice, ICurrentUserService currentUserService, ICampaignService campaignService, IConfiguration config)
         {
             _currentUserService = currentUserService;
             _vpnPayService = vnPayservice;
             _campaignService = campaignService;
+            _config = config;
         }
 
         [HttpPost("pay-campaign")]
@@ -110,34 +112,37 @@ namespace SWD392_AffiliLinker.API.Controllers
         //[Authorize]
         public async Task<IActionResult> PaymentCallBack()
         {
-            var response = _vpnPayService.PaymentExecute(Request.Query);
+			string redirectUrl;
+			var response = _vpnPayService.PaymentExecute(Request.Query);
 
             if (response == null || response.VnPayResponseCode != "00")
             {
-                return StatusCode(500, new { message = $"Lỗi thanh toán VNPay: {response?.VnPayResponseCode ?? "unknown error"}" });
-            }
+				//return StatusCode(500, new { message = $"Lỗi thanh toán VNPay: {response?.VnPayResponseCode ?? "unknown error"}" });
 
-            // Lưu transaction
+				redirectUrl = $"{_config["VnPay:ReturnFailed"]}?status=failed&reason={response?.VnPayResponseCode ?? "unknown"}";
+				return Redirect(redirectUrl);
+			}
+
             await _vpnPayService.SaveTransactionAsync(response);
 
-            return Ok(new
-            {
-                message = "Thanh toán thành công!",
-                transaction = new
-                {
-                    PaymentMethod = response.PaymentMethod,
-                    OrderDescription = response.OrderDescription,
-                    CampaignId = response.Id,
-                    TransactionId = response.TransactionId,
-                    Amount = response.Amount,
-                    Status = response.Success ? "Success" : "Failed",
-                    CreatedDate = DateTime.UtcNow.AddHours(7)
-                }
-            });
-        }
+			redirectUrl = $"{_config["VnPay:ReturnSuccess"]}?status=success&transactionId={response.TransactionId}&amount={response.Amount}";
 
-
-
-
+			//return Ok(new
+			//         {
+			//             message = "Thanh toán thành công!",
+			//             transaction = new
+			//             {
+			//                 PaymentMethod = response.PaymentMethod,
+			//                 OrderDescription = response.OrderDescription,
+			//                 CampaignId = response.Id,
+			//                 TransactionId = response.TransactionId,
+			//                 Amount = response.Amount,
+			//                 Status = response.Success ? "Success" : "Failed",
+			//                 CreatedDate = DateTime.UtcNow.AddHours(7)
+			//             }
+			//         });
+			return Redirect(redirectUrl);
+		}
+       
     }
 }
