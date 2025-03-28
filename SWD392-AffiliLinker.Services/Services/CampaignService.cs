@@ -40,8 +40,8 @@ namespace SWD392_AffiliLinker.Services
 				var campaign = _mapper.Map<Campaign>(campaignRequest);
 				campaign.UserId = Guid.Parse(userId);
 				campaign.EnrollCount = 0;
-				campaign.CreatedTime = DateTime.Now;
-				campaign.LastUpdatedTime = DateTime.Now;
+				campaign.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+				campaign.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 				campaign.Status = CampaignStatus.Wait.ToString();
 				campaign.ConversionRate = campaignRequest.ConversionRate;
 				campaign.Image = url;
@@ -55,8 +55,8 @@ namespace SWD392_AffiliLinker.Services
 				{
 					PayoutModelId = payoutId,
 					CampaignId = campaign.Id,
-					CreatedTime = DateTime.UtcNow,
-					LastUpdatedTime = DateTime.UtcNow,
+					CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
+					LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
 					Status = MemberStatus.Active.ToString()
 				}).ToList();
 
@@ -232,11 +232,21 @@ namespace SWD392_AffiliLinker.Services
 			_unitOfWork.BeginTransaction();
 			try
 			{
-				var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
-				if (campaign == null)
+                //var campaign = await _unitOfWork.GetRepository<Campaign>().GetByIdAsync(id);
+                var campaign = await _unitOfWork.GetRepository<Campaign>().Entities.Include(_ => _.AffiliateLinks).FirstOrDefaultAsync(_ => _.Id == id);
+                if (campaign == null)
 					return BaseResponse<bool>.FailResponse("Campaign not found");
 
 				campaign.Status = status.ToString();
+				campaign.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+
+
+                foreach (var i in campaign.AffiliateLinks)
+				{
+					i.Status = LinkStatus.Stop.ToString();
+					i.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+
+                }
 
 				_unitOfWork.GetRepository<Campaign>().Update(campaign);
 				await _unitOfWork.SaveAsync();

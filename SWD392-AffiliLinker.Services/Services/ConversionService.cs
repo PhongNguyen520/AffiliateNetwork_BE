@@ -51,8 +51,8 @@ namespace SWD392_AffiliLinker.Services.Services
                 var commission = request.Subtotal * converRate;
 
 				var converDb = _mapper.Map<Conversion>(request);
-				converDb.CreatedTime = DateTime.Now;
-				converDb.LastUpdatedTime = DateTime.Now;
+				converDb.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+				converDb.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 				converDb.Status = ConversionStatus.Pending.ToString();
 				converDb.IsPayment = false;
 				converDb.Commission = commission.Value;
@@ -66,7 +66,7 @@ namespace SWD392_AffiliLinker.Services.Services
 				if (commissionEntity != null)
 				{
 					commissionEntity.TotalCommission += commission.Value;
-					commissionEntity.LastUpdatedTime = DateTime.Now;
+					commissionEntity.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 					_unitOfWork.GetRepository<Commission>().Update(commissionEntity);
 				}
 				else
@@ -76,8 +76,8 @@ namespace SWD392_AffiliLinker.Services.Services
 					commissionEntity.TotalCommission = commission.Value;
 					
 					commissionEntity.PublisherId = user.Publisher.Id;
-					commissionEntity.CreatedTime = DateTime.Now;
-					commissionEntity.LastUpdatedTime = DateTime.Now;
+					commissionEntity.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+					commissionEntity.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 
 					await _unitOfWork.GetRepository<Commission>().InsertAsync(commissionEntity);
 				}

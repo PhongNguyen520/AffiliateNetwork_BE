@@ -18,6 +18,5 @@ namespace SWD392_AffiliLinker.Services.DTO.ConversionDTO.Response
         public decimal Commission { get; set; }
         public string Status { get; set; } = string.Empty;
         public bool? IsPayment { get; set; }
-        public string AffiliateLinkId { get; set; }
     }
 }

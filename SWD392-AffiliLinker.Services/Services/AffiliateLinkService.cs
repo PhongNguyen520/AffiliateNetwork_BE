@@ -53,8 +53,8 @@ namespace SWD392_AffiliLinker.Services.Services
                     request.Url = campaign.WebsiteLink;
                 }
                 var result = _mapper.Map<AffiliateLink>(request);
-                result.CreatedTime = DateTime.UtcNow;
-                result.LastUpdatedTime = DateTime.UtcNow;
+                result.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+                result.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
                 result.UserId = Guid.Parse(userId);
                 result.ShortenUrl = await GenerateShortCodeAsync();
 
@@ -141,7 +141,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 var affiliateLink = await _unitOfWork.GetRepository<AffiliateLink>()
                                               .Entities
                                               .FirstOrDefaultAsync(s => s.ShortenUrl == shortenCode);
-                if (affiliateLink is null)
+                if (affiliateLink is null || affiliateLink.Status == LinkStatus.Stop.ToString())
                 { 
                     throw new BaseException.ErrorException(StatusCodes.NotFound, StatusCodes.NotFound.Name(), "AffiliateLink Not Exist!!!"); 
                 }
@@ -165,7 +165,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 var affiliateLink = await _unitOfWork.GetRepository<AffiliateLink>()
                                            .Entities
                                            .FirstOrDefaultAsync(s => s.OptimizeUrl == slug);
-                if (affiliateLink is null)
+                if (affiliateLink is null || affiliateLink.Status == LinkStatus.Stop.ToString())
                 {
                     throw new BaseException.ErrorException(StatusCodes.NotFound, StatusCodes.NotFound.Name(), "AffiliateLink Not Exist!!!");
                 }
