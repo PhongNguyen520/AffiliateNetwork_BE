@@ -46,8 +46,8 @@ namespace SWD392_AffiliLinker.Services.Services
 
 				CampaignMember result = new CampaignMember()
 				{
-					CreatedTime = DateTime.UtcNow,
-					LastUpdatedTime = DateTime.UtcNow,
+					CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
+					LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
 					CampaignId = campaignId,
 					UserId = Guid.Parse(userId),
 					Status = MemberStatus.Active.ToString()

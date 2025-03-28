@@ -68,7 +68,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 User? newUser = _mapper.Map<User>(registerModelView);
 
                 newUser.Status = UserStatus.Active.ToString();
-                newUser.CreatedTime = DateTime.Now;
+                newUser.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
                 newUser.LastUpdatedTime = newUser.CreatedTime;
                 newUser.Publisher.LastUpdatedTime = newUser.CreatedTime;
                 newUser.Publisher.CreatedTime = newUser.CreatedTime;
@@ -134,7 +134,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 User? newUser = _mapper.Map<User>(registerModelView);
 
                 newUser.Status = UserStatus.Active.ToString();
-                newUser.CreatedTime = DateTime.Now;
+                newUser.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
                 newUser.LastUpdatedTime = newUser.CreatedTime;
                 newUser.Advertiser.LastUpdatedTime = newUser.CreatedTime;
                 newUser.Advertiser.CreatedTime = newUser.CreatedTime;
@@ -198,7 +198,7 @@ namespace SWD392_AffiliLinker.Services.Services
 				var newUser = _mapper.Map<User>(registerModelView);
 
                 newUser.Status = UserStatus.Active.ToString();
-                newUser.CreatedTime = DateTime.Now;
+                newUser.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
                 newUser.LastUpdatedTime = newUser.CreatedTime;
 
                 var result = await _userManager.CreateAsync(newUser, registerModelView.Password);

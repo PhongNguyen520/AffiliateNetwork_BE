@@ -45,8 +45,8 @@ namespace SWD392_AffiliLinker.Services.Services
 				}
 
 				var result = _mapper.Map<PayoutModel>(request);
-				result.CreatedTime = DateTime.UtcNow;
-				result.LastUpdatedTime = DateTime.UtcNow;
+				result.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+				result.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 				result.Status = CommonStatus.Active.ToString();
 				await _unitOfWork.GetRepository<PayoutModel>().InsertAsync(result);
 				await _unitOfWork.SaveAsync();

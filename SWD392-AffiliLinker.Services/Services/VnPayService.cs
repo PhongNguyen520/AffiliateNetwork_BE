@@ -150,8 +150,8 @@ namespace SWD392_AffiliLinker.Services.Services
                         : response.OrderDescription,
                     Status = response.Success ? "Success" : "Failed",
                     UserId = Guid.Parse(response.UserId),
-                    CreatedTime = DateTimeOffset.UtcNow,
-                    LastUpdatedTime = DateTimeOffset.UtcNow
+                    CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
+                    LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7))
                 };
 
                 await _unitOfWork.GetRepository<Transaction>().InsertAsync(transaction);

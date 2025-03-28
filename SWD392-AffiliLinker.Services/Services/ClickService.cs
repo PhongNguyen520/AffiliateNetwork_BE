@@ -34,8 +34,8 @@ namespace SWD392_AffiliLinker.Services.Services
             try
             {
                 var clickInfoDb = _mapper.Map<ClickInfo>(request);
-                clickInfoDb.CreatedTime = DateTime.Now;
-                clickInfoDb.LastUpdatedTime = DateTime.Now;
+                clickInfoDb.CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
+                clickInfoDb.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
 
                 await _unitOfWork.GetRepository<ClickInfo>().InsertAsync(clickInfoDb);
 
@@ -64,7 +64,7 @@ namespace SWD392_AffiliLinker.Services.Services
                 if(checkClinkDay != null)
                 {
                     checkClinkDay.Count++;
-                    checkClinkDay.LastUpdatedTime = DateTime.Now;
+                    checkClinkDay.LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7));
                     await _unitOfWork.GetRepository<ClickCount>()
                                      .UpdateAsync(checkClinkDay);
                     return;
@@ -73,8 +73,8 @@ namespace SWD392_AffiliLinker.Services.Services
                 {
                     Count = 1,
                     AffiliateLinkId = AffiliateLinkId,
-                    LastUpdatedTime = DateTime.Now,
-                    CreatedTime = DateTime.Now
+                    LastUpdatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)),
+                    CreatedTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7))
                 };
                 await _unitOfWork.GetRepository<ClickCount>().InsertAsync(clickCount);
             }

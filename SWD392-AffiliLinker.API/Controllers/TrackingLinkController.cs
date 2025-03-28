@@ -87,14 +87,14 @@ namespace SWD392_AffiliLinker.API.Controllers
                 {
                     IPAddress = infoClientResponse.IpAddress,
                     UserAgent = infoClientResponse.UserAgent,
-                    Status = ClickInfoStatus.Invalid.Name(),
+                    Status = ClickInfoStatus.Invalid.ToString(),
                     AffiliateLinkId = affiLink.Id,
                 };
 
                 if (cookieValue != affiLink.Id)
                 {
                     _cookieService.SetCookie(affiLink.Id);
-                    clickInfoRequest.Status = ClickInfoStatus.Valid.Name();
+                    clickInfoRequest.Status = ClickInfoStatus.Valid.ToString();
                 }
 
                 await _clickService.CreateClickInfo(clickInfoRequest);
