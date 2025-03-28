@@ -68,12 +68,28 @@ namespace SWD392_AffiliLinker.Services.Mapping
 			CreateMap<BasePaginatedList<Conversion>, BasePaginatedList<ConversionResponse>>().ReverseMap();
 			CreateMap<User, AccountResponse>().ReverseMap();
 			CreateMap<Publisher, PublisherAccountResponse>()
-				.ForMember(dest => dest.PublisherId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
-				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
-				.ReverseMap();
+				.ForMember(dest => dest.PublisherId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .ForMember(dest => dest.DOB, opt => opt.MapFrom(src => src.User.DOB))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.User.Status))
+                .ReverseMap();
 			CreateMap<Advertiser, AdvertiserAccountResponse>()
-                .ForMember(dest => dest.AdvertiserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)).ReverseMap()
+                .ForMember(dest => dest.AdvertiserId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .ForMember(dest => dest.DOB, opt => opt.MapFrom(src => src.User.DOB))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.User.Status))
                 .ReverseMap();
             CreateMap<BasePaginatedList<User>, BasePaginatedList<AccountResponse>>().ReverseMap();
 			CreateMap<Commission, CommissionResponse>().ReverseMap();
