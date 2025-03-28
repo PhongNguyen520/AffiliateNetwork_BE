@@ -58,10 +58,6 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed!'
-        }
-        always {
-            // Clean up Docker images to save space
-            sh 'docker system prune -f'
-        }
+        } 
     }
 }
